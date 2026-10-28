@@ -1,0 +1,263 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--topbar-h) + env(safe-area-inset-top, 0px) + 20px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.65;
+  font-feature-settings: "kern", "liga";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+:lang(zh) body,
+body:lang(zh) {
+  line-height: 1.8;
+}
+
+/* Chinese has no italic: emphasis keeps its color or takes weight, never a slant the browser makes up. */
+:lang(zh) em,
+:lang(zh) i:not([lang]) {
+  font-style: normal;
+}
+
+:lang(zh) .prose em {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+::selection {
+  background: var(--selection);
+  color: var(--ink);
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--ink);
+  text-wrap: balance;
+  margin: 0;
+}
+
+p,
+ul,
+ol,
+dl,
+figure {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--font-mono);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.wrap {
+  width: 100%;
+  max-width: calc(var(--wrap) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+}
+
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 100;
+  padding: 10px 14px;
+  border-radius: var(--r-ctl);
+  background: var(--ink);
+  color: var(--on-ink);
+  font-weight: 600;
+}
+
+.skip:focus {
+  top: calc(12px + env(safe-area-inset-top, 0px));
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.icon-sm {
+  width: 16px;
+  height: 16px;
+}
+
+/* Buttons: ink is the primary action (a seal of ink on paper), a hairline the secondary. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: var(--r-ctl);
+  font-weight: 550;
+  font-size: 1rem;
+  letter-spacing: 0.005em;
+  line-height: 1.2;
+  border: 1px solid transparent;
+  transition: background-color 0.18s var(--ease), color 0.18s var(--ease), border-color 0.18s var(--ease), transform 0.18s var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn .icon {
+  transition: transform 0.25s var(--ease);
+}
+
+.btn--ink {
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+.btn--line {
+  border-color: var(--line-strong);
+  color: var(--ink);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+}
+
+@media (hover: hover) {
+  .btn--ink:hover {
+    background: color-mix(in srgb, var(--ink) 86%, var(--qing));
+  }
+  .btn--ink:hover .icon {
+    transform: translateX(3px);
+  }
+  .btn--line:hover {
+    border-color: var(--ink);
+    background: var(--surface);
+  }
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: var(--r-ctl);
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) {
+  .icon-btn:hover {
+    background: var(--hover);
+    color: var(--ink);
+  }
+}
+
+/* Labels set in small capitals of the mono face: section labels, figures, status. */
+.label,
+.eyebrow,
+.sec-label {
+  font-family: var(--font-label);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+:lang(zh) .label,
+:lang(zh) .eyebrow,
+:lang(zh) .sec-label {
+  letter-spacing: 0.08em;
+}
+
+/* Paper grain: a fixed layer of noise over the landing page, on screens wide enough to afford a blended layer. */
+.grain {
+  display: none;
+}
+
+@media (min-width: 720px) {
+  .grain {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    mix-blend-mode: var(--grain-blend);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 1.4 -0.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+.ext::after {
+  content: "↗";
+  display: inline-block;
+  margin-left: 0.15em;
+  font-size: 0.8em;
+  color: var(--ink-3);
+  text-decoration: none;
+}

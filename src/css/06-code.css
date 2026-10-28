@@ -1,0 +1,200 @@
+/* Code: an inkstone panel, dark in both schemes, with its language or file name and a copy button. */
+
+.code {
+  position: relative;
+  min-width: 0;
+  border-radius: var(--r-panel);
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border: 1px solid var(--code-line);
+  overflow: hidden;
+  font-size: 0.86rem;
+}
+
+.code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 38px;
+  padding: 0 6px 0 16px;
+  background: var(--code-head);
+  border-bottom: 1px solid var(--code-line);
+}
+
+.code-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--code-muted);
+}
+
+.code-label:empty::before {
+  content: "\00a0";
+}
+
+.copy {
+  flex: none;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--code-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.copy.is-copied {
+  color: #a9d3b2;
+}
+
+@media (hover: hover) {
+  .copy:hover {
+    color: var(--code-fg);
+    border-color: var(--code-line);
+  }
+}
+
+.code pre {
+  margin: 0;
+  padding: 14px 18px 16px;
+  overflow-x: auto;
+  line-height: 1.68;
+  tab-size: 4;
+  scrollbar-width: thin;
+  scrollbar-color: var(--code-line) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.code pre:focus-visible {
+  outline: 2px solid var(--qing);
+  outline-offset: -2px;
+}
+
+.code code {
+  font-family: var(--font-mono);
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  white-space: pre;
+}
+
+.code--output {
+  background: color-mix(in srgb, var(--code-bg) 80%, var(--bg));
+  border-style: dashed;
+}
+
+.code--output .code-head {
+  background: transparent;
+}
+
+.code--output pre .line span {
+  color: var(--code-muted) !important;
+}
+
+/* A group of panels shown as tabs: the tabs are the panels' head, the copy button sits at its right. */
+.code-group {
+  position: relative;
+  min-width: 0;
+  border-radius: var(--r-panel);
+  background: var(--code-bg);
+  border: 1px solid var(--code-line);
+  overflow: hidden;
+}
+
+.code-tabs {
+  display: flex;
+  gap: 2px;
+  min-height: 40px;
+  padding: 0 84px 0 6px;
+  background: var(--code-head);
+  border-bottom: 1px solid var(--code-line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.code-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.code-tabs button {
+  position: relative;
+  flex: none;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: var(--code-muted);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.code-tabs button[aria-selected="true"] {
+  color: var(--code-fg);
+}
+
+.code-tabs button[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: #8cc5d6;
+}
+
+@media (hover: hover) {
+  .code-tabs button:hover {
+    color: var(--code-fg);
+  }
+}
+
+.code-tabs button:focus-visible {
+  outline: 2px solid var(--qing);
+  outline-offset: -4px;
+}
+
+.code--grouped {
+  position: static;
+  border: 0;
+  border-radius: 0;
+}
+
+.code--grouped .copy {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+}
+
+/* Inline code outside the prose (landing page, cards). */
+.inline-code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--line-soft);
+}
+
+/* Han characters have no italic: Chinese comments stand upright (the highlighter writes the slant inline). */
+:lang(zh) .code span[style*="font-style:italic"] {
+  font-style: normal !important;
+}

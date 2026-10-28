@@ -1,0 +1,25 @@
+name: ci
+
+# Builds the site and runs its checks (npm run check), which read the core submodule: the code blocks copied from it
+# and the contract reference for AI assistants. Workers Builds runs the same check before it deploys main.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: site
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run check
