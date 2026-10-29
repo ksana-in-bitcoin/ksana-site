@@ -205,7 +205,7 @@ specification lists as work to do before mainnet.
 | Audit | Findings | Outcome |
 | --- | --- | --- |
 | First internal audit (`ef07411`) | 42 | Fixed through local hardening (D-098) and new consensus rules (D-100, with devnet and signet restarted from genesis); all three critical findings and four of the five high ones are fixed, and the fifth waits for the gas calibration |
-| Second internal audit (`11f0576`, re-checked at `5819b26`) | 22 (2 critical, 1 high, 9 medium, 10 low) and 8 notes | The critical and high findings and three medium ones were fixed before the code merged, and two medium ones later (D-102, D-106); 12 are open (2 medium, 10 low) and 2 partly fixed |
+| Second internal audit (`11f0576`, re-checked at `5819b26`) | 22 (2 critical, 1 high, 9 medium, 10 low) and 8 notes | The critical and high findings and three medium ones were fixed before the code merged, the four other medium ones later (D-102, D-106, D-130, D-135) and two low ones with them (D-135); 8 are open (all low) and 2 partly fixed |
 
 The second report, with the status of every finding of both audits, is
 [audits/2026-10-06-second-internal-audit.md]({{repo}}/blob/main/audits/2026-10-06-second-internal-audit.md); the first
@@ -256,8 +256,9 @@ replay the withholding table with other values of `GHOSTDAG_K` and `EMPTY_BLOCK_
   at most 8 of them, and you resubmit the failed one.
 - **Rescue costs.** A rescue copies the payload, so the carrier reward stays with the block's original producer while
   the rescuer pays the Bitcoin fee.
-- **Open audit findings.** Mostly local denial-of-service hardening: unbounded pending headers from Bitcoin payloads,
-  the gas price of compiling contract code, and client-side items in `ksana-cli`, the SDK and the web wallet.
+- **Open audit findings.** Mostly local denial-of-service hardening: valid side-branch headers on Bitcoin, which every
+  node keeps until pruning at the price of their proof of work, the gas price of compiling contract code, and
+  client-side items in `ksana-cli`, the SDK and the web wallet.
 - **Outside the audits.** wasmtime's own correctness, Bitcoin Core, the browser wallets, performance under real
   network load, and reward economics beyond the simulations.
 
