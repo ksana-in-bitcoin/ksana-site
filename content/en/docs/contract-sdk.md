@@ -333,7 +333,7 @@ pub const MAX_ASSET_DECIMALS: u8 = 18;
 With the feature `standards`, the SDK holds the reference implementations of [KS-20](/docs/ks-20/) tokens and [KS-721](/docs/ks-721/) collections: a contract answers every standard method by calling `dispatch`, and `conformance` tests it against the standard on the mock host. The feature is off by default, since it changes the module even of a contract that does not use it. Turn it on in `Cargo.toml`:
 
 ```toml
-ksana-contract-sdk = { path = "../Ksana/crates/ksana-contract-sdk", features = ["standards"] }
+ksana-contract-sdk = { path = "../ksana/crates/ksana-contract-sdk", features = ["standards"] }
 ```
 
 In the playground, the KS-20 token, NFT and AMM pages build with it, and the others without.

@@ -13,7 +13,7 @@ description: ksana-cli 的每一条命令，附公开 signet 上的示例：从�
 
 ```sh
 git clone {{repo}}
-cd Ksana
+cd ksana
 rustup toolchain install
 cargo build --release --locked -p ksana-cli
 target/release/ksana-cli --version

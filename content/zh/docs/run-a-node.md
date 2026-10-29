@@ -34,7 +34,7 @@ description: 如何在 Ksana 的公开 signet 上运行 ksana-node：从环境�
 
 ```sh
 git clone {{repo}}
-cd Ksana
+cd ksana
 rustup toolchain install
 cargo build --release --locked -p ksana-node -p ksana-indexer -p ksana-cli --bins
 ```

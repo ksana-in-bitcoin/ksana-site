@@ -32,7 +32,7 @@ You need Rust 1.98.1 or later with the `wasm32-unknown-unknown` target, and a cl
 
 ```text
 work/
-  Ksana/      git clone {{repo}}
+  ksana/      git clone {{repo}}
   tip-jar/
     Cargo.toml
     rust-toolchain.toml
@@ -52,7 +52,7 @@ publish = false
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-ksana-contract-sdk = { path = "../Ksana/crates/ksana-contract-sdk" }
+ksana-contract-sdk = { path = "../ksana/crates/ksana-contract-sdk" }
 
 [profile.release]
 opt-level = "z"

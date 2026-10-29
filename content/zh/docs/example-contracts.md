@@ -22,7 +22,7 @@ description: Ksana 示例合约（token、amm、amm-factory、btc-payment-trigge
 
 ```sh
 git clone {{repo}}
-cd Ksana/contracts
+cd ksana/contracts
 cargo test --workspace
 ```
 

@@ -293,7 +293,7 @@ Run the poll’s tests from a clone of the repository, with Rust 1.98.1:
 
 ```sh
 git clone {{repo}}
-cd Ksana/contracts
+cd ksana/contracts
 cargo test -p poll
 ```
 

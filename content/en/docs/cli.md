@@ -13,7 +13,7 @@ Build it from the repository. The [quickstart](/docs/quickstart/) lists the Ubun
 
 ```sh
 git clone {{repo}}
-cd Ksana
+cd ksana
 rustup toolchain install
 cargo build --release --locked -p ksana-cli
 target/release/ksana-cli --version

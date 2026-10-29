@@ -14,8 +14,8 @@ SDK 位于仓库的 `sdk/ts` 目录，包名是 `@ksana/sdk`。它能在 Node.js
 
 ```sh
 git clone {{repo}}
-(cd Ksana/sdk/ts && npm ci && npm run build && npm pack)
-mkdir -p my-app/vendor && mv Ksana/sdk/ts/ksana-sdk-0.1.0.tgz my-app/vendor/
+(cd ksana/sdk/ts && npm ci && npm run build && npm pack)
+mkdir -p my-app/vendor && mv ksana/sdk/ts/ksana-sdk-0.1.0.tgz my-app/vendor/
 cd my-app
 npm init -y
 npm pkg set type=module

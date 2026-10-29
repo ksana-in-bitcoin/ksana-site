@@ -84,7 +84,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --defaul
 
 ```sh
 git clone {{repo}}
-cd Ksana
+cd ksana
 rustup toolchain install
 cargo build --release --locked -p ksana-cli
 export PATH="$PWD/target/release:$PATH"

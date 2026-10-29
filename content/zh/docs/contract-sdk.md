@@ -333,7 +333,7 @@ pub const MAX_ASSET_DECIMALS: u8 = 18;
 打开 `standards` 特性后，SDK 带有 [KS-20](/docs/ks-20/) 代币和 [KS-721](/docs/ks-721/) 合集的参考实现：合约调用 `dispatch` 就能应答每一个标准方法，`conformance` 则在模拟宿主上按标准测试它。这个特性默认关闭，因为打开它，连不用它的合约的模块也会改变。在 `Cargo.toml` 里打开它：
 
 ```toml
-ksana-contract-sdk = { path = "../Ksana/crates/ksana-contract-sdk", features = ["standards"] }
+ksana-contract-sdk = { path = "../ksana/crates/ksana-contract-sdk", features = ["standards"] }
 ```
 
 在 Playground 里，“KS-20 代币”、“NFT”和“AMM”页面用它构建，其他页面不用。

@@ -84,7 +84,7 @@ Clone the repository and build. `rustup toolchain install` reads `rust-toolchain
 
 ```sh
 git clone {{repo}}
-cd Ksana
+cd ksana
 rustup toolchain install
 cargo build --release --locked -p ksana-cli
 export PATH="$PWD/target/release:$PATH"
