@@ -14,8 +14,8 @@ The package is not on npm. Build it from the repository, pack it into a tarball,
 
 ```sh
 git clone {{repo}}
-(cd Ksana/sdk/ts && npm ci && npm run build && npm pack)
-mkdir -p my-app/vendor && mv Ksana/sdk/ts/ksana-sdk-0.1.0.tgz my-app/vendor/
+(cd ksana/sdk/ts && npm ci && npm run build && npm pack)
+mkdir -p my-app/vendor && mv ksana/sdk/ts/ksana-sdk-0.1.0.tgz my-app/vendor/
 cd my-app
 npm init -y
 npm pkg set type=module

@@ -34,7 +34,7 @@ Install the build tools and `rustup` as in the [quickstart](/docs/quickstart/), 
 
 ```sh
 git clone {{repo}}
-cd Ksana
+cd ksana
 rustup toolchain install
 cargo build --release --locked -p ksana-node -p ksana-indexer -p ksana-cli --bins
 ```

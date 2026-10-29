@@ -295,7 +295,7 @@ fn every_account_votes_once() {
 
 ```sh
 git clone {{repo}}
-cd Ksana/contracts
+cd ksana/contracts
 cargo test -p poll
 ```
 

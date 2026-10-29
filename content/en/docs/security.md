@@ -263,9 +263,10 @@ replay the withholding table with other values of `GHOSTDAG_K` and `EMPTY_BLOCK_
 
 ## Report a vulnerability {#reporting}
 
-Do not describe a vulnerability in an issue, a discussion or a pull request. Send it to a maintainer of the
-`ksana-in-bitcoin` organization through a private channel you already share with them; if you have none, open an issue
-that asks for a private contact and leave the details out. Include:
+Do not describe a vulnerability in an issue, a discussion or a pull request. Report it privately through GitHub's
+private vulnerability reporting, with [Report a vulnerability]({{repo}}/security/advisories/new) in the repository's
+Security tab, or send it to a maintainer of the `ksana-in-bitcoin` organization through a private channel you already
+share with them. Include:
 
 - the affected component (crate, SDK, contract or web app) and the commit you looked at;
 - what an attacker can do, what it costs them, and who is affected (one node, every node, the indexer, users' funds);

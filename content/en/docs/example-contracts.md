@@ -22,7 +22,7 @@ The native tests run each contract against the SDK’s mock host, with no node. 
 
 ```sh
 git clone {{repo}}
-cd Ksana/contracts
+cd ksana/contracts
 cargo test --workspace
 ```
 

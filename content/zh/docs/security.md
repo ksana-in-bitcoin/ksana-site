@@ -160,7 +160,7 @@ cargo test -p ksana-indexer --release --test deep_reorg -- --ignored --nocapture
 
 ## 报告漏洞 {#reporting}
 
-不要在 issue、discussion 或 pull request 里描述漏洞。请通过你和 `ksana-in-bitcoin` 组织某位维护者之间已有的私密渠道发给对方；如果没有这样的渠道，就开一个 issue，请求一个私下联系的方式，但不要写任何细节。报告里请包括：
+不要在 issue、discussion 或 pull request 里描述漏洞。请通过 GitHub 的私密漏洞报告提交，也就是仓库 Security 页上的 [Report a vulnerability]({{repo}}/security/advisories/new)；或者通过你和 `ksana-in-bitcoin` 组织某位维护者之间已有的私密渠道发给对方。报告里请包括：
 
 - 受影响的组件（crate、SDK、合约或网页应用），以及你查看的提交（commit）；
 - 攻击者能做什么，要付出多少代价，谁会受影响（一个节点、所有节点、索引器、用户的资金）；
