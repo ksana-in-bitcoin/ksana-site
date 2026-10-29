@@ -39,7 +39,8 @@ Difficulty adjusts every block with aserti3-2d, Bitcoin Cash’s algorithm, anch
 | Network | Lowest difficulty (`POW_LIMIT_BITS`) | What it means |
 | --- | --- | --- |
 | mainnet | `0x1f00ffff` | About 65,536 evaluations per block: about 13 cores for a block every 5 seconds |
-| signet, devnet | `0x207fffff` | Bitcoin regtest’s easiest target |
+| signet | `0x1f0fffff` | About 4,096 evaluations per block: about 3.5 seconds of one core |
+| devnet | `0x207fffff` | Bitcoin regtest’s easiest target |
 
 A genesis config can start harder: the signet’s genesis `bits`, `0x1f068db8`, expects about 10,000 evaluations per block, sized for its two seed nodes on one core each.
 
