@@ -640,7 +640,7 @@ rpc $NODE ksana_getSettlement '["38"]' | jq '.result | del(.txs)'
 
 - `txid` is the reveal transaction, which carries the payload in its Taproot witness; `commit_txid` is the commit transaction it spends. The `_rpc` fields give them in explorer order.
 - `status` is `pending` (not broadcast yet: a settlement waits until the block has 2 fast-lane confirmations), `broadcast`, or `confirmed` once the block’s data is on Bitcoin. A settlement that confirmed before the headers it needs from earlier blocks had counted put nothing on Bitcoin, so the status stays `broadcast` until the same payload is sent again and lands.
-- `confirmed` describes the first confirmed Bitcoin transaction that put the block’s data on Bitcoin, `{ "txid", "height", "block", "confirmations" }`. That can be the block’s own settlement, a later block’s, or a republish.
+- `confirmed` describes the first confirmed Bitcoin transaction that put the block’s data on Bitcoin, `{ "txid", "height", "block", "confirmations" }`. That can be the block’s own settlement, a later block’s, or a republish. For a block with no body to land, such as an empty block carrying a batch’s settlement, it is the first transaction carrying the block’s header at the height where the header counts, so its `txid` can differ from the block’s own.
 - `settled` is `true` once the data of the block that accepted it, and of every main-chain block before that one, is on Bitcoin; `btc_final` is `true` once the block that accepted it is final.
 - `carrier_account` is the account paid as the block’s carrier, or `null` when the producer keeps the reward. It is answered from the current Bitcoin chain and main chain.
 
