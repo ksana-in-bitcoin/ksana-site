@@ -51,7 +51,7 @@ A block’s data reaches Bitcoin in a **settlement** of two transactions. The **
 
 Two transactions are needed because in a single one the data could sit only in a witness element that no signature covers, which any relayer could swap without changing the transaction ID; committing to the script in an output first fixes it. In the witness, each byte of data costs a quarter of a vbyte.
 
-The **payload** in the envelope holds the block’s header and entries, the headers of earlier blocks that are not on Bitcoin yet, and the entries (bodies) of earlier blocks that carried no settlement. Headers and entries are encoded compactly: in a run of empty blocks each header after the first takes 14 bytes, and a path B KSA transfer takes 79 to 143 bytes. An ordinary settlement measured 154 vB for the commit and 209 vB for the reveal on regtest. A block with no entries, or only path C entries, needs only its header on Bitcoin, because anyone can derive its entries from Bitcoin.
+The **payload** in the envelope holds the block’s header and entries, the headers of earlier blocks that have not counted on Bitcoin yet, and the entries (bodies) of earlier blocks that carried no settlement. A header **counts** on Bitcoin once its anchor is on Bitcoin’s best chain and its parents have counted, so a payload carries every header its block needs; a body lands only with its counted header, and only when it matches the header’s entries root. Headers and entries are encoded compactly: in a run of empty blocks each header after the first takes 14 bytes, and a path B KSA transfer takes 79 to 143 bytes. An ordinary settlement measured 154 vB for the commit and 209 vB for the reveal on regtest. A block with no entries, or only path C entries, needs only its header on Bitcoin, because anyone can derive its entries from Bitcoin.
 
 A producer broadcasts a settlement once the block that carries it is 2 blocks deep on the main chain (`SETTLEMENT_DEPTH`), so that a brief fork of the fast lane does not send two conflicting settlements to Bitcoin. The signed transactions travel inside the block, so any node can broadcast them.
 
@@ -65,14 +65,14 @@ The producer whose block carries a settlement pays its Bitcoin fee from its own 
 
 The fast lane depends on its data reaching Bitcoin, so the rules make sure someone lands it:
 
-- **Rescue**: when a settlement cannot confirm (its funding was spent, or its fee stays too low), other nodes rebuild the same payload with their own funding, taking turns in main-chain order.
+- **Rescue**: when a settlement cannot confirm (its funding was spent, or its fee stays too low), or confirmed before the headers it needs from earlier blocks had counted and so landed nothing, nodes send the same payload again with their own funding, taking turns in main-chain order.
 - **Republish**: anyone may send missing headers and bodies in a payload that names a payee. The payee becomes the carrier of the blocks whose data it lands first, when that data lands more than `ANCHOR_DEPTH` + 2 Bitcoin blocks above their anchor (more than 3 on the signet), which leaves the producers’ own settlements time to land first.
 - **Unlock**: nobody receives a block’s rewards or fees until the data of that block and of every block before it is on Bitcoin, so every later producer wants missing data landed.
 - **Backlog limit**: when a body is still missing 6 Bitcoin blocks after its block’s anchor (`SETTLEMENT_TIMEOUT`), new blocks may hold only path C entries until it lands. Path B pauses; path C keeps working.
 
 ## Finality from Bitcoin
 
-Every node and every indexer decides finality with the same function of Bitcoin data, so they reach the same answer without trusting one another. The headers that have appeared in payloads on Bitcoin form a DAG of their own. At each Bitcoin height, the function takes the heaviest fast-lane chain among those headers and walks it from the last block decided final: a block is **decided final** when its data, and the data of the blocks it merges, has 6 Bitcoin confirmations (`BTC_FINALITY_CONFS`) and executing it gives a valid result. Nodes and indexers report it **final** (`btc_final`) once the Bitcoin block of that decision has 6 confirmations too, so at the earliest five Bitcoin blocks after the sixth confirmation of its data.
+Every node and every indexer decides finality with the same function of Bitcoin data, so they reach the same answer without trusting one another. The headers that count on Bitcoin form a DAG of their own. At each Bitcoin height, the function takes the heaviest fast-lane chain among those headers and walks it from the last block decided final: a block is **decided final** when its data, and the data of the blocks it merges, has 6 Bitcoin confirmations (`BTC_FINALITY_CONFS`) and executing it gives a valid result. Nodes and indexers report it **final** (`btc_final`) once the Bitcoin block of that decision has 6 confirmations too, so at the earliest five Bitcoin blocks after the sixth confirmation of its data.
 
 What this means when someone builds a competing fast-lane chain:
 

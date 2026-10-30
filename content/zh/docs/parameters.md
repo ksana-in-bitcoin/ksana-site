@@ -28,7 +28,7 @@ description: Ksana 在 devnet、signet 和主网上的协议参数：常量名�
 | `CHAIN_ID` | 1001 | 1002 | 1000 |
 | `ANCHOR_DEPTH` | 0 | 1 | 2 |
 | `NATIVE_CONFIRMATIONS` | 1 | 1 | 3 |
-| `POW_LIMIT_BITS` | `0x207fffff` | `0x207fffff` | `0x1f00ffff` |
+| `POW_LIMIT_BITS` | `0x207fffff` | `0x1f0fffff` | `0x1f00ffff` |
 | `BLOCK_REWARD` | 990,000,000 (9.9 KSA) | 990,000,000 (9.9 KSA) | 420,000,000 (4.2 KSA) |
 | `REWARD_HALVING_INTERVAL` | 25,228,800 | 25,228,800 | 12,500,000 |
 | `REWARD_INTERVAL_DOUBLINGS` | 0 | 0 | 2 |
@@ -52,7 +52,7 @@ description: Ksana 在 devnet、signet 和主网上的协议参数：常量名�
 | `EMPTY_BLOCK_DIFFICULTY` | 12 | 非空块之后第一个空块的权重 |
 | `MAX_EMPTY_BLOCK_WEIGHT` | 120 | 连续空块权重的上限 |
 
-在普通 CPU 的一个核心上，一次 Argon2id 哈希约需 1 毫秒。在主网上，`0x1f00ffff` 对应约 2^240 的目标值：在这个最低难度下，每块约需 65,536 次哈希，所以大约 13 个核心就能每 5 秒找到一个区块。创世配置可以设定更难的 `bits`，与上线时预期的算力相匹配。devnet 和 signet 用的是 `0x207fffff`，即比特币 regtest 最容易的目标值。
+在普通 CPU 的一个核心上，一次 Argon2id 哈希约需 1 毫秒。在主网上，`0x1f00ffff` 对应约 2^240 的目标值：在这个最低难度下，每块约需 65,536 次哈希，所以大约 13 个核心就能每 5 秒找到一个区块。创世配置可以设定更难的 `bits`，与上线时预期的算力相匹配。signet 用的是 `0x1f0fffff`，对应约 2^244 的目标值：在这个最低难度下每块约需 4,096 次哈希，约占一个核心 3.5 秒，这样即使一条侧枝的难度降到了最低难度，它放上比特币的每个区块头仍然要付出代价。devnet 用的是 `0x207fffff`，即比特币 regtest 最容易的目标值。
 
 **两速难度**。有条目的区块权重为 1。选定链上连续的第 s 个空块，权重为 min(N × 2^(s − 1), N_MAX)，其中 N = `EMPTY_BLOCK_DIFFICULTY`，N_MAX = `MAX_EMPTY_BLOCK_WEIGHT`：依次是 12、24、48、96，之后每个都是 120（`Params::empty_block_weight`）。区块的 PoW 目标值要除以它的权重，权重还计入 DAA 分数，也决定区块占几个奖励槽，所以空闲的链大约每 1、2、4、8 分钟出一块，之后每 10 分钟一块。见[挖矿](/docs/mining/)。
 

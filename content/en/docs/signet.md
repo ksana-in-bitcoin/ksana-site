@@ -129,9 +129,9 @@ The signet runs the same rules as mainnet and shares most of its values: blocks 
 | Halving period, in DAA score | 25,228,800, every period the same | 12,500,000, then 25,000,000, then 50,000,000 |
 | KSA cap | 1,000,000,000 | 210,000,000 |
 | Genesis allocation | 100,000,000 KSA to the faucet, 10,000,000 to the operator account | none |
-| Lowest difficulty (`pow_limit_bits`) | `0x207fffff` | `0x1f00ffff` |
+| Lowest difficulty (`pow_limit_bits`) | `0x1f0fffff` | `0x1f00ffff` |
 
-devnet, the local network on Bitcoin’s regtest, has the signet’s values except chain ID 1001 and `ANCHOR_DEPTH` 0. [Parameters](/docs/parameters/) lists every value for the three networks.
+devnet, the local network on Bitcoin’s regtest, has the signet’s values except chain ID 1001, `ANCHOR_DEPTH` 0 and the lowest difficulty `0x207fffff`. [Parameters](/docs/parameters/) lists every value for the three networks.
 
 When nobody sends operations, the signet’s producers make empty blocks, which are up to 120 times harder than a block with entries, so an idle signet slows from about a block a minute to about one every ten minutes. The first operation brings back blocks every few seconds. [Mining](/docs/mining/) explains this two-speed difficulty.
 

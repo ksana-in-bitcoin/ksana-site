@@ -170,6 +170,13 @@ SHA-256 hash of the deploying account, that operation's nonce and the code's has
 `create_contract` gets the hash of the creating contract's ID, a 32-byte salt and the code's hash. See
 [Accounts](/docs/accounts/).
 
+### Counted header
+
+A block header that a payload on Bitcoin has added to the header DAG. It counts at the payload's Bitcoin height once
+its anchor is on Bitcoin's best chain and its parents have counted; a header whose parents have not counted leaves no
+trace and has to be carried again. A block's body lands only with its counted header. See
+[How it works](/docs/how-it-works/).
+
 ### CPFP bump
 
 Child pays for parent: a node raises the fee of a settlement it sent that waits in the Bitcoin mempool, by spending the
@@ -562,7 +569,8 @@ transaction's first input so that nobody can copy it. See [Operations and fees](
 ### Payload
 
 The data that a settlement or republish transaction carries in its envelope: compact block headers and the bodies of
-the blocks that need them, at most 81,920 bytes and 500 headers. A path C transaction's payload is one operation. See
+the blocks that need them, at most 81,920 bytes and 500 headers. Its headers count only where their parents have
+counted ([Counted header](#counted-header)). A path C transaction's payload is one operation. See
 [How it works](/docs/how-it-works/).
 
 ### Producer
@@ -613,9 +621,10 @@ a payee who can earn the carrier reward. See [How it works](/docs/how-it-works/)
 
 ### Rescue
 
-A node rebuilding a stuck settlement with its own funding: the same payload in a new commit and reveal pair. The
-block's producer goes first, then the producers of the main-chain blocks after it, one Bitcoin block apart, then any
-other node. See [How it works](/docs/how-it-works/).
+A node rebuilding a stuck settlement with its own funding: the same payload in a new commit and reveal pair. A
+settlement is stuck when it cannot confirm, or when it confirmed before the headers it needs from earlier blocks had
+counted and so landed nothing. The block's producer goes first, then the producers of the main-chain blocks after it,
+one Bitcoin block apart, then any other node. See [How it works](/docs/how-it-works/).
 
 ### Revert and trap
 

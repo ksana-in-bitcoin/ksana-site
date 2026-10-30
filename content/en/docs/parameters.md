@@ -39,7 +39,7 @@ part of the Argon2id salt of the proof of work.
 | `CHAIN_ID` | 1001 | 1002 | 1000 |
 | `ANCHOR_DEPTH` | 0 | 1 | 2 |
 | `NATIVE_CONFIRMATIONS` | 1 | 1 | 3 |
-| `POW_LIMIT_BITS` | `0x207fffff` | `0x207fffff` | `0x1f00ffff` |
+| `POW_LIMIT_BITS` | `0x207fffff` | `0x1f0fffff` | `0x1f00ffff` |
 | `BLOCK_REWARD` | 990,000,000 (9.9 KSA) | 990,000,000 (9.9 KSA) | 420,000,000 (4.2 KSA) |
 | `REWARD_HALVING_INTERVAL` | 25,228,800 | 25,228,800 | 12,500,000 |
 | `REWARD_INTERVAL_DOUBLINGS` | 0 | 0 | 2 |
@@ -69,8 +69,10 @@ to height A − `NATIVE_CONFIRMATIONS` + 1, and producers anchor `ANCHOR_DEPTH` 
 
 One Argon2id evaluation takes about 1 ms on one core of an ordinary CPU. On mainnet, `0x1f00ffff` is a target of about
 2^240: about 65,536 evaluations per block at the limit, so about 13 cores find a block every 5 seconds there. A genesis
-config can set a harder `bits` to match the hashrate expected at launch. Devnet and signet use `0x207fffff`, the easiest
-target of Bitcoin regtest.
+config can set a harder `bits` to match the hashrate expected at launch. The signet uses `0x1f0fffff`, a target of
+about 2^244: about 4,096 evaluations per block at the limit, about 3.5 seconds of one core, so that a side branch whose
+difficulty has fallen to the limit still pays for every header it puts on Bitcoin. Devnet uses `0x207fffff`, the
+easiest target of Bitcoin regtest.
 
 **Two-speed difficulty.** A block with entries has weight 1. The s-th empty block in a row on a selected chain has
 weight min(N × 2^(s − 1), N_MAX), with N = `EMPTY_BLOCK_DIFFICULTY` and N_MAX = `MAX_EMPTY_BLOCK_WEIGHT`: 12, 24, 48,
