@@ -200,7 +200,7 @@ The node checks the wallet at startup and logs `the funding outputs are listed f
 
 :::
 
-A settlement pair is about 316 to 383 vB plus a 240-sat anchor output, so about 1,000 sats at 2 sat/vB. Even an idle signet sends one about every two Bitcoin blocks, paid by the producer of the block that carries it. Check the funds with `$BCLI -rpcwallet=ksana-funding listunspent 0` and top up below 0.002 sBTC or three outputs: a node out of funds keeps producing, but its blocks’ data waits for another producer to carry it.
+A settlement pair is about 300 to 360 vB, so about 700 sats at 2 sat/vB. Even an idle signet sends one about every two Bitcoin blocks, paid by the producer of the block that carries it. Check the funds with `$BCLI -rpcwallet=ksana-funding listunspent 0` and top up below 0.002 sBTC or three outputs: a node out of funds keeps producing, but its blocks’ data waits for another producer to carry it.
 
 `--funding-pool-target 0` keeps the outputs as you sent them. By default (64) the node splits its largest output into pieces of at least 100,000 sats whenever it has fewer than 64 usable ones; the hosted seed nodes run with 0 and are funded with several outputs instead.
 

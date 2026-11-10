@@ -47,7 +47,7 @@ The depth absorbs shallow Bitcoin reorganizations: one of at most `ANCHOR_DEPTH`
 A settlement is a commit and reveal pair: the producer’s funding pays the commit, and the reveal’s Taproot witness carries the KSN1 envelope with the block’s data.
 :::
 
-A block’s data reaches Bitcoin in a **settlement** of two transactions. The **commit transaction** spends the producer’s own bitcoin and creates a Taproot output committing to a script that holds the data. The **reveal transaction** spends that output, so the data appears in its witness, inside a `KSN1` envelope. The reveal also pays 240 sats to a P2A anchor output, which lets anyone raise the pair’s fee with a child transaction (CPFP), and has an empty `OP_RETURN` output that keeps it above Bitcoin Core’s minimum transaction size.
+A block’s data reaches Bitcoin in a **settlement** of two transactions. The **commit transaction** spends the producer’s own bitcoin and creates a Taproot output committing to a script that holds the data. The **reveal transaction** spends that output, so the data appears in its witness, inside a `KSN1` envelope. The commit’s only output is that commitment, and the reveal’s only output returns the change to the producer, who can raise the pair’s fee by spending it in a child transaction (CPFP). The data in the envelope may be compressed with zstd; a node decompresses it before checking it against the block.
 
 Two transactions are needed because in a single one the data could sit only in a witness element that no signature covers, which any relayer could swap without changing the transaction ID; committing to the script in an output first fixes it. In the witness, each byte of data costs a quarter of a vbyte.
 

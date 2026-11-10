@@ -200,7 +200,7 @@ target/release/ksana-node --chain signet --data-dir ~/ksana-signet/node \
 
 :::
 
-一对结算交易约 316 到 383 vB，外加一个 240 聪的锚点输出，按 2 sat/vB 算约 1,000 聪。即使 signet 处于空闲，大约每两个比特币区块也会发出一对，由携带它的那个区块的出块者付费。用 `$BCLI -rpcwallet=ksana-funding listunspent 0` 查看资金，低于 0.002 sBTC 或不足三个输出时就补充：资金耗尽的节点会继续出块，但它的区块数据要等别的出块者来携带。
+一对结算交易约 300 到 360 vB，按 2 sat/vB 算约 700 聪。即使 signet 处于空闲，大约每两个比特币区块也会发出一对，由携带它的那个区块的出块者付费。用 `$BCLI -rpcwallet=ksana-funding listunspent 0` 查看资金，低于 0.002 sBTC 或不足三个输出时就补充：资金耗尽的节点会继续出块，但它的区块数据要等别的出块者来携带。
 
 `--funding-pool-target 0` 让输出保持你转入时的样子。默认情况下（64），只要可用的输出少于 64 个，节点就会把最大的那个输出拆成每份至少 100,000 聪的若干份；托管的种子节点用的是 0，改为一开始就用多个输出注资。
 

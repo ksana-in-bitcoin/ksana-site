@@ -104,7 +104,6 @@ description: Ksana 在 devnet、signet 和主网上的协议参数：常量名�
 | `MAX_SETTLEMENT_HEADERS` | 500 | 一个载荷中最多的区块头数，在解码任何区块头之前就先检查 |
 | `MAX_CHUNK` | 520 字节 | KSN1 输出或信封中单次数据 push 的最大长度（`crates/ksana-btc/src/data.rs`） |
 | `MAX_SETTLEMENT_TX_BYTES` | 400,000 字节 | 提交交易或揭示交易的最大长度；`MAX_SETTLEMENT_WEIGHT` 把它的重量限制在 400,000 WU 以内（`crates/ksana-btc/src/settlement.rs`） |
-| `P2A_AMOUNT_SAT` | 240 聪 | 揭示交易的 P2A 锚点输出的金额；CPFP 子交易花费这个输出，来提高这对交易的手续费 |
 | `PRODUCER_SEQUENCE` | `0xFFFFFFFD` | 提交交易和揭示交易的每个输入都必须使用的 `nSequence` |
 | `MAX_BIP322_SIG_BYTES` | 1,024 字节 | BIP322 simple 签名的最大长度（`crates/ksana-crypto/src/bip322.rs`） |
 | `MAX_CALL_FUNDS` | 16 | 一次调用最多附带的资产数 |
@@ -254,7 +253,7 @@ DAA 分数远远跑在高度前面，因为 signet 大部分时间都处于空�
 | `--max-settlement-feerate` | 100 sat/vB | 本节点比特币费率的上限，CPFP 加速和与竞争链赛跑时也不例外 |
 | `--settlement-conf-target` | 3 个比特币区块 | `estimatesmartfee` 的目标；比特币上有一条较轻的竞争链时改为 1 |
 | 内存池的空位 | 500,000 vB | bitcoind 的内存池不超过半个区块时（`ROOMY_MEMPOOL_VSIZE`），本节点新发的比特币交易按下限付费，内存池的最低费率更高时按那个费率，而不按估计；比特币上有一条较轻的竞争链时除外 |
-| `BUMP_AFTER` | 2 个比特币区块 | 本节点发出的一对结算交易，若以低于 bitcoind 估计的费率等了这么久，就通过 P2A 输出加速到这个估计；内存池有空位时，还在等的一对交易至少加速到它自己费率的两倍，之后每多一个区块再翻一倍，直到上限 |
+| `BUMP_AFTER` | 2 个比特币区块 | 本节点发出的一对结算交易，若以低于 bitcoind 估计的费率等了这么久，就由一笔花费揭示交易找零的子交易加速到这个估计；内存池有空位时，还在等的一对交易至少加速到它自己费率的两倍，之后每多一个区块再翻一倍，直到上限 |
 | `CLAIM_PATIENCE` | 8 个比特币区块 | 比特币内存池里有交易声称结算某个区块时，对该区块的救援最多推迟这么久（`RESCUE_ORDER_WINDOW` 6 + `RESCUE_DELAY` 2） |
 | `--hot-wallet-cap-sat` | 1,000,000 聪 | 配合 `--revenue-address`：出资钱包超过这个数额的部分（超出达到 100,000 聪和上限的十分之一后）由单独的归集交易转到收益地址 |
 | `--funding-pool-target` | 64 | 要保持的已确认出资输出个数，办法是把最大的输出拆成每份至少 100,000 聪 |

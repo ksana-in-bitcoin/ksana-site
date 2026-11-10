@@ -180,7 +180,7 @@ trace and has to be carried again. A block's body lands only with its counted he
 ### CPFP bump
 
 Child pays for parent: a node raises the fee of a settlement it sent that waits in the Bitcoin mempool, by spending the
-reveal transaction's 240-sat P2A output in a child transaction with a higher fee. See [Mining](/docs/mining/).
+reveal transaction's change output in a child transaction with a higher fee. See [Mining](/docs/mining/).
 
 ## D
 
@@ -538,11 +538,6 @@ The 32-byte key that a Taproot address encodes: its internal key tweaked as BIP8
 output key, which is why your account and your Taproot address are the same bytes. See [Accounts](/docs/accounts/).
 
 ## P
-
-### P2A output
-
-The 240-sat pay-to-anchor output of every reveal transaction. Anyone can spend it in a child transaction to raise the
-fee of a settlement that waits in the Bitcoin mempool. See [Mining](/docs/mining/).
 
 ### Packing floor
 

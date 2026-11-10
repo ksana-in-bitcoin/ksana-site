@@ -97,7 +97,7 @@ lighter chain's blocks reach 6 confirmations first.
 
 When such a chain has been on Bitcoin for one Bitcoin block and a node's own chain there is still lighter, the node
 republishes its headers up to its tip at the next-block fee rate (up to `--max-settlement-feerate`) and bumps its own
-waiting settlements to that rate through their P2A output. Once the honest chain is connected on Bitcoin, the candidate
+waiting settlements to that rate with a child transaction spending their reveal’s change. Once the honest chain is connected on Bitcoin, the candidate
 with more chain work is decided final. What remains is the case where no operator pays to land the honest chain's data
 for 6 Bitcoin blocks.
 
