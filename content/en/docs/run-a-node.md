@@ -224,7 +224,7 @@ Path B has its own local policy: `--min-token-fee` (default 1) is the lowest fee
 
 ### Revenue address
 
-`--revenue-address <tb1… address>` keeps the hot wallet small. When the funding address would still hold at least `--hot-wallet-cap-sat` (default 1,000,000 sats) without the coins a settlement spends, that settlement’s change goes to the revenue address instead of back to the funding address. It needs `--btc-funding-key-file`, and the address must be a standard signet address other than the funding address.
+`--revenue-address <tb1… address>` keeps the hot wallet small. Settlement change always returns to the funding address, so the node can bump any settlement it sent. When the funding coins available for settlements hold more than `--hot-wallet-cap-sat` (default 1,000,000 sats) by at least 100,000 sats and a tenth of the cap, the node sends a separate sweep transaction that moves that excess, less its fee, to the revenue address; the funding address keeps the cap. It needs `--btc-funding-key-file`, and the address must be a standard signet address other than the funding address.
 
 ### Other producer flags
 

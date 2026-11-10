@@ -84,7 +84,7 @@ These flags are your own policy. They decide what your node pays for every Bitco
 | `--settlement-conf-target` | 3 | Bitcoin blocks for bitcoind’s `estimatesmartfee`; the next block while a lighter competing chain is on Bitcoin |
 | `--settlement-feerate` | 2 sat/vB | The floor: paid while bitcoind’s mempool holds at most half a block, and when bitcoind has no estimate |
 | `--max-settlement-feerate` | 100 sat/vB | The cap |
-| `--revenue-address` | none | With `--hot-wallet-cap-sat` (1,000,000 sats): settlement change goes here while the funding address keeps at least the cap |
+| `--revenue-address` | none | With `--hot-wallet-cap-sat` (1,000,000 sats): a separate sweep transaction moves what the funding address holds above the cap here |
 
 A pair your node sent that waits 2 Bitcoin blocks below bitcoind’s estimate gets a child transaction (CPFP) spending the reveal’s P2A output and one funding output, which lifts both to the estimate; if the estimate rises again, a richer child replaces it. While the mempool has room, a pair still waiting after 2 Bitcoin blocks is lifted to at least twice its own rate, and twice that again for every further block, up to the cap, whatever bitcoind estimates. Anyone can spend that P2A output, so someone may attach a large, cheap child to it first, which your child would have to outbid in full; when bitcoind refuses your child for that reason, your node sends the pair’s data again in a new pair of its own at the same rate instead. When a settlement cannot confirm at all, other nodes rescue it with their own funding, in turns that follow the main chain.
 
