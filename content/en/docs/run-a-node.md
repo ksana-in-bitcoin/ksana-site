@@ -183,7 +183,7 @@ If the sBTC confirmed before the import, rescan from a signet height before it a
 
 ### Fund the address
 
-Send sBTC to `signet_address` in at least three outputs, since each settlement in flight uses one. 0.006 sBTC in all is enough to start; a node that produces a third of the blocks spends about 0.00025 sBTC a day at 2 sat/vB (up to 0.0005 with traffic), so 0.02 sBTC lasts it about six weeks. Wait for the outputs to confirm.
+Send sBTC to `signet_address` in at least three outputs, since each settlement in flight uses one. 0.006 sBTC in all is enough to start; a node that produces a third of the blocks spends about 0.00017 sBTC a day at 2 sat/vB (up to 0.00035 with traffic), so 0.02 sBTC lasts it about eight weeks. Wait for the outputs to confirm.
 
 ### Start the node with the key
 
@@ -200,7 +200,7 @@ The node checks the wallet at startup and logs `the funding outputs are listed f
 
 :::
 
-A settlement pair is about 316 to 383 vB plus a 240-sat anchor output, so about 1,000 sats at 2 sat/vB. Even an idle signet sends one about every two Bitcoin blocks, paid by the producer of the block that carries it. Check the funds with `$BCLI -rpcwallet=ksana-funding listunspent 0` and top up below 0.002 sBTC or three outputs: a node out of funds keeps producing, but its blocks’ data waits for another producer to carry it.
+A settlement pair is about 300 to 360 vB, so about 700 sats at 2 sat/vB. Even an idle signet sends one about every two Bitcoin blocks, paid by the producer of the block that carries it. Check the funds with `$BCLI -rpcwallet=ksana-funding listunspent 0` and top up below 0.002 sBTC or three outputs: a node out of funds keeps producing, but its blocks’ data waits for another producer to carry it.
 
 `--funding-pool-target 0` keeps the outputs as you sent them. By default (64) the node splits its largest output into pieces of at least 100,000 sats whenever it has fewer than 64 usable ones; the hosted seed nodes run with 0 and are funded with several outputs instead.
 
@@ -218,13 +218,13 @@ These flags set what your node pays for its own Bitcoin transactions (settlement
 | `--max-settlement-feerate` | `100` | The highest fee rate, bumps included. |
 | `--settlement-conf-target` | `3` | The confirmation target, in Bitcoin blocks, for bitcoind’s `estimatesmartfee`. |
 
-While bitcoind’s mempool holds at most half a block (500,000 vB), the next Bitcoin block has room for everything waiting, and the node pays the floor, or the mempool’s own minimum when that is higher. When the mempool holds more, it pays bitcoind’s estimate within the floor and the cap. While a lighter competing chain is on Bitcoin it aims for the next block instead, whatever room there is. A settlement pair that has waited 2 Bitcoin blocks while paying less than the estimate gets a CPFP child that spends its anchor output; while the mempool has room, one still waiting after 2 blocks gets a child that lifts it to at least twice its own rate, and twice that again for every further block, up to the cap. Keep the floor at 2 on the signet: on 13 October 2026 signet’s blocks took nothing below 2 sat/vB while transactions at 1 sat/vB waited. Cap it at 5 like the hosted seed nodes (`--max-settlement-feerate 5`): bitcoind’s estimate can stay far above what signet’s blocks take, as it stayed at 100 sat/vB from 16 October 2026.
+While bitcoind’s mempool holds at most half a block (500,000 vB), the next Bitcoin block has room for everything waiting, and the node pays the floor, or the mempool’s own minimum when that is higher. When the mempool holds more, it pays bitcoind’s estimate within the floor and the cap. While a lighter competing chain is on Bitcoin it aims for the next block instead, whatever room there is. A settlement pair that has waited 2 Bitcoin blocks while paying less than the estimate gets a CPFP child that spends the reveal’s change; while the mempool has room, one still waiting after 2 blocks gets a child that lifts it to at least twice its own rate, and twice that again for every further block, up to the cap. Keep the floor at 2 on the signet: on 13 October 2026 signet’s blocks took nothing below 2 sat/vB while transactions at 1 sat/vB waited. Cap it at 5 like the hosted seed nodes (`--max-settlement-feerate 5`): bitcoind’s estimate can stay far above what signet’s blocks take, as it stayed at 100 sat/vB from 16 October 2026.
 
 Path B has its own local policy: `--min-token-fee` (default 1) is the lowest fee in KSA base units your blocks include, `--min-relay-token-fee` the lowest your node admits and relays (by default the same), and `--min-fee-per-kib` (default 0, no limit) a floor on the fee rate. [Operations and fees](/docs/submitting-ops/) explains how they apply.
 
 ### Revenue address
 
-`--revenue-address <tb1… address>` keeps the hot wallet small. When the funding address would still hold at least `--hot-wallet-cap-sat` (default 1,000,000 sats) without the coins a settlement spends, that settlement’s change goes to the revenue address instead of back to the funding address. It needs `--btc-funding-key-file`, and the address must be a standard signet address other than the funding address.
+`--revenue-address <tb1… address>` keeps the hot wallet small. Settlement change always returns to the funding address, so the node can bump any settlement it sent. When the funding coins available for settlements hold more than `--hot-wallet-cap-sat` (default 1,000,000 sats) by at least 100,000 sats and a tenth of the cap, the node sends a separate sweep transaction that moves that excess, less its fee, to the revenue address; the funding address keeps the cap. It needs `--btc-funding-key-file`, and the address must be a standard signet address other than the funding address.
 
 ### Other producer flags
 

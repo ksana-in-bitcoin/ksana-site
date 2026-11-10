@@ -97,7 +97,7 @@ lighter chain's blocks reach 6 confirmations first.
 
 When such a chain has been on Bitcoin for one Bitcoin block and a node's own chain there is still lighter, the node
 republishes its headers up to its tip at the next-block fee rate (up to `--max-settlement-feerate`) and bumps its own
-waiting settlements to that rate through their P2A output. Once the honest chain is connected on Bitcoin, the candidate
+waiting settlements to that rate with a child transaction spending their reveal’s change. Once the honest chain is connected on Bitcoin, the candidate
 with more chain work is decided final. What remains is the case where no operator pays to land the honest chain's data
 for 6 Bitcoin blocks.
 
@@ -189,7 +189,7 @@ x86_64 and aarch64.
 | Contracts that exhaust a node | Exact gas metering, memory, instance, call depth and stack limits, and the block gas limit; a read-only `ksana_call` gets at most `BLOCK_GAS_LIMIT` gas, 4 at a time per node |
 | Spam through the entry pool or P2P | Signature, nonce and balance checks on admission, per-account limits, a byte cap with eviction, a capped orphan pool, peer scoring and bans |
 | A client signing for the wrong network | `ksana-cli` and the web wallet take the network from the node's chain ID before anything is signed, and the TypeScript SDK has no default network |
-| A producer's hot wallet stolen | The funding key is separate from the `--producer` account, and `--revenue-address` with `--hot-wallet-cap-sat` sends settlement change elsewhere above a cap |
+| A producer's hot wallet stolen | The funding key is separate from the `--producer` account, and `--revenue-address` with `--hot-wallet-cap-sat` sweep what exceeds a cap elsewhere |
 
 ::: warning Signing a hex message
 A browser wallet signs a Ksana operation as a BIP322 message of 64 hex digits, the operation's signature hash. A site

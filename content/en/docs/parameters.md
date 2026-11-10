@@ -132,7 +132,6 @@ listed under [Local policy defaults](#local-policy-defaults).
 | `MAX_SETTLEMENT_HEADERS` | 500 | Most block headers in one payload, checked before any header is decoded |
 | `MAX_CHUNK` | 520 bytes | Largest data push in a KSN1 output or envelope (`crates/ksana-btc/src/data.rs`) |
 | `MAX_SETTLEMENT_TX_BYTES` | 400,000 bytes | Largest commit or reveal transaction; `MAX_SETTLEMENT_WEIGHT` caps its weight at 400,000 WU (`crates/ksana-btc/src/settlement.rs`) |
-| `P2A_AMOUNT_SAT` | 240 sats | Value of the reveal transaction's P2A anchor output, which a CPFP child spends to raise the pair's fee |
 | `PRODUCER_SEQUENCE` | `0xFFFFFFFD` | The `nSequence` that every input of a commit and reveal transaction must have |
 | `MAX_BIP322_SIG_BYTES` | 1,024 bytes | Largest BIP322 simple signature (`crates/ksana-crypto/src/bip322.rs`) |
 | `MAX_CALL_FUNDS` | 16 | Most assets attached to one call |
@@ -310,9 +309,9 @@ still agree on the chain. [Run a node](/docs/run-a-node/) explains the flags.
 | `--max-settlement-feerate` | 100 sat/vB | Cap of this node's Bitcoin fee rate, CPFP bumps and competing-chain races included |
 | `--settlement-conf-target` | 3 Bitcoin blocks | Target of `estimatesmartfee`; 1 while a lighter competing chain is on Bitcoin |
 | Room in the mempool | 500,000 vB | While bitcoind's mempool holds at most half a block (`ROOMY_MEMPOOL_VSIZE`), this node's new Bitcoin transactions pay the floor, or the mempool's minimum when that is higher, instead of the estimate; not while a lighter competing chain is on Bitcoin |
-| `BUMP_AFTER` | 2 Bitcoin blocks | A settlement pair this node sent that waits this long below bitcoind's estimate is bumped to it through the P2A output; while the mempool has room, one still waiting is bumped to at least twice its own rate, doubling for every further block, up to the cap |
+| `BUMP_AFTER` | 2 Bitcoin blocks | A settlement pair this node sent that waits this long below bitcoind's estimate is bumped to it by a child transaction spending the reveal's change; while the mempool has room, one still waiting is bumped to at least twice its own rate, doubling for every further block, up to the cap |
 | `CLAIM_PATIENCE` | 8 Bitcoin blocks | Longest a settlement claim in the Bitcoin mempool holds back a rescue (`RESCUE_ORDER_WINDOW` 6 + `RESCUE_DELAY` 2) |
-| `--hot-wallet-cap-sat` | 1,000,000 sats | With `--revenue-address`: when the funding wallet, less the funding a settlement spends, still holds at least this much, the settlement's change goes to the revenue address |
+| `--hot-wallet-cap-sat` | 1,000,000 sats | With `--revenue-address`: what the funding wallet holds above this much (once the excess reaches 100,000 sats and a tenth of the cap) is moved to the revenue address by a separate sweep transaction |
 | `--funding-pool-target` | 64 | Confirmed funding outputs to keep, by splitting the largest into pieces of at least 100,000 sats |
 | Settlement batching | On | While a settlement is in flight (carried by a block anchored at most 2 Bitcoin blocks below the tip, `IN_FLIGHT_BTC_BLOCKS`, and not landed yet), new blocks leave their bodies for the next settlement, unless the bodies waiting, or a block's own, pass 10 KiB (`MAX_BLOCK_DATA_BYTES` / `PAYLOAD_BODY_TRIGGER` 8); `--no-settlement-batching` makes every block that needs a body carry its own settlement |
 | Pruning | On | The pruning root is the highest block decided final at least 144 Bitcoin blocks below the tip (`PRUNE_BTC_MARGIN`), and a node prunes again once the pruning point can advance 1,000 blue score (`PRUNE_STEP`); `--no-pruning` keeps everything |

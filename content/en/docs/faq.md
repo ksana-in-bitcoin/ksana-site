@@ -69,8 +69,7 @@ On path C you pay your transaction's Bitcoin fee: a plain transfer is about 330 
 
 ### Who pays the Bitcoin fees?
 
-For path B, producers do. A settlement is a commit and reveal pair of about 320 to 380 virtual bytes plus a 240-sat
-anchor output, about 1,000 sats at 2 sat/vB, and producers are paid in KSA: path B fees and block rewards, which unlock
+For path B, producers do. A settlement is a commit and reveal pair of about 300 to 360 virtual bytes, about 700 sats at 2 sat/vB, and producers are paid in KSA: path B fees and block rewards, which unlock
 once the data is on Bitcoin, with a share for the block's carrier, usually the producer whose settlement lands the data.
 For path C and top-ups, you pay the fee of your own transaction. See [KSA and rewards](/docs/ksa/).
 
