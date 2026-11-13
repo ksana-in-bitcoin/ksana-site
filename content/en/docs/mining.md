@@ -82,11 +82,11 @@ These flags are your own policy. They decide what your node pays for every Bitco
 | Flag | Default | Effect |
 | --- | --- | --- |
 | `--settlement-conf-target` | 3 | Bitcoin blocks for bitcoind’s `estimatesmartfee`; the next block while a lighter competing chain is on Bitcoin |
-| `--settlement-feerate` | 2 sat/vB | The floor: paid while bitcoind’s mempool holds at most half a block, and when bitcoind has no estimate |
+| `--settlement-feerate` | 2 sat/vB | The floor: paid while bitcoind’s mempool holds at most half a block and the last Bitcoin block was at most half full, and when bitcoind has no estimate |
 | `--max-settlement-feerate` | 100 sat/vB | The cap |
 | `--revenue-address` | none | With `--hot-wallet-cap-sat` (1,000,000 sats): a separate sweep transaction moves what the funding address holds above the cap here |
 
-A pair your node sent that waits 2 Bitcoin blocks below bitcoind’s estimate gets a child transaction (CPFP) spending the reveal’s change output, which lifts both to the estimate; if the estimate rises again, a richer child replaces it. While the mempool has room, a pair still waiting after 2 Bitcoin blocks is lifted to at least twice its own rate, and twice that again for every further block, up to the cap, whatever bitcoind estimates. Only your funding key can spend that change, so no one else can attach a child of their own to the pair. When a settlement cannot confirm at all, other nodes rescue it with their own funding, in turns that follow the main chain.
+A pair your node sent that waits 2 Bitcoin blocks below bitcoind’s estimate gets a child transaction (CPFP) spending the reveal’s change output, which lifts both to the estimate; if the estimate rises again, a richer child replaces it. While the mempool has room, a pair still waiting after 2 Bitcoin blocks is lifted to at least twice its own rate, and twice that again for every further block, up to the cap, whatever bitcoind estimates. A pair that waited while there seemed to be room and that a Bitcoin block found 2 minutes or more later leaves out is lifted at once to at least the next-block estimate, and your node pays the estimate for the next 6 Bitcoin blocks. Only your funding key can spend that change, so no one else can attach a child of their own to the pair. When a settlement cannot confirm at all, other nodes rescue it with their own funding, in turns that follow the main chain.
 
 The signet’s two seed nodes run with `--settlement-feerate 2 --max-settlement-feerate 5 --min-block-interval-ms 1000 --funding-pool-target 0` and a watch-only funding wallet; `signet/ksana-signet.sh` in the repository has their full command line.
 
