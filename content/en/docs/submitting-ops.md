@@ -65,10 +65,10 @@ Each node sets its own floors. They are policy, not consensus:
 | --- | --- | --- |
 | `--min-token-fee` | 1 base unit | Packing floor: the smallest fee this node puts in its blocks |
 | `--min-fee-per-kib` | 0 | The lowest fee rate this node packs |
-| `--ksa-price-sat` | None | What one KSA is worth to the operator, in sat: the lowest fee rate then follows the Bitcoin fee rate the node pays |
+| `--ksa-price-sat` | None | What one KSA is worth to the operator, in sat: an op must then also pay for its bytes at the Bitcoin fee rate the node pays |
 | `--min-relay-token-fee` | The packing floor | Relay floor: the smallest fee this node admits and forwards (the lower of the two floors applies) |
 
-An operation above the relay floor but below the packing floor still enters the pool and travels on, for a producer with a lower floor. No network-wide price exists: each producer prices KSA against its own Bitcoin costs. A producer run with `--ksa-price-sat` does so at every Bitcoin block: an op’s data lands on Bitcoin as a quarter of a vB per byte, so it asks each KiB of cost for the KSA worth 256 vB at the fee rate it pays. When that rate rises, an op that was enough a block ago waits in the pool until the rate falls, another producer packs it, or you replace it with a higher fee. Ask a node what it suggests with `ksana-cli estimate-fee` (the RPC method `ksana_estimateFee`):
+An operation above the relay floor but below the packing floor still enters the pool and travels on, for a producer with a lower floor. No network-wide price exists: each producer prices KSA against its own Bitcoin costs. A producer run with `--ksa-price-sat` does so at every Bitcoin block: an op’s data lands on Bitcoin as a quarter of a vB per byte, so it asks each KiB of an op’s encoded size for the KSA worth 256 vB at the fee rate it pays. This floor goes by the op’s size alone, whatever its `max_gas`, and applies beside the two above. When that rate rises, an op that was enough a block ago waits in the pool until the rate falls, another producer packs it, or you replace it with a higher fee. Ask a node what it suggests with `ksana-cli estimate-fee` (the RPC method `ksana_estimateFee`):
 
 ```sh
 export KSANA_RPC={{signet.rpc}}
@@ -89,7 +89,7 @@ ksana-cli --chain signet estimate-fee
 }
 ```
 
-`path_b.per_kib` is the median, over the last 20 main-chain blocks, of the lowest path B fee rate in each block that has one, and `path_b.amount` is that rate applied to a plain transfer with a `max_gas` of 10,000, rounded up and at least the packing floor. `feerate_sat_vb` is the Bitcoin fee rate the node pays for its own settlements now, a reference for path C transactions.
+`path_b.per_kib` is the median, over the last 20 main-chain blocks, of the lowest path B fee rate in each block that has one, and `path_b.amount` is that rate applied to a plain transfer with a `max_gas` of 10,000, rounded up and at least the packing floor. A node run with `--ksa-price-sat` also returns `path_b.per_kib_data`, what it asks per KiB of an op’s encoded size, and its `path_b.amount` covers that as well. `feerate_sat_vb` is the Bitcoin fee rate the node pays for its own settlements now, a reference for path C transactions.
 
 ### The entry pool
 

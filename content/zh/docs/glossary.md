@@ -392,7 +392,7 @@ Taproot 地址所编码的 32 字节公钥：它的内部公钥按 BIP86 的方�
 
 ### 打包门槛（Packing floor）
 
-出块者放进自己区块的路径 B 操作所需的最低手续费（`--min-token-fee`，默认 1 个最小单位）和最低费率（`--min-fee-per-kib`，默认 0）。设了 KSA 价格（`--ksa-price-sat`）的出块者，会让最低费率跟着它所付的比特币费率升降。见[操作与手续费](/docs/submitting-ops/)。
+出块者放进自己区块的路径 B 操作所需的最低手续费（`--min-token-fee`，默认 1 个最小单位）和最低费率（`--min-fee-per-kib`，默认 0）。设了 KSA 价格（`--ksa-price-sat`）的出块者，还会要求每笔操作按它所付的比特币费率为自己的字节付费。见[操作与手续费](/docs/submitting-ops/)。
 
 ### 平行块（Parallel block）
 

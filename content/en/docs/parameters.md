@@ -304,7 +304,7 @@ still agree on the chain. [Run a node](/docs/run-a-node/) explains the flags.
 | `--min-token-fee` | 1 base unit | Packing floor: the smallest path B fee this node puts in its blocks |
 | `--min-relay-token-fee` | The packing floor | Relay floor: the smallest fee this node admits and forwards (the lower of the two applies) |
 | `--min-fee-per-kib` | 0 | Smallest fee rate this node packs, in base units per KiB of cost |
-| `--ksa-price-sat` | None | What one KSA is worth to the operator, in sat. With it, the smallest fee rate follows the Bitcoin fee rate the node pays: a KiB of cost must pay the KSA worth 256 vB (only with a funding key) |
+| `--ksa-price-sat` | None | What one KSA is worth to the operator, in sat. With it, an op must also pay for its bytes at the Bitcoin fee rate the node pays: a KiB of its encoded size must pay the KSA worth 256 vB, whatever its `max_gas` (only with a funding key) |
 | Entry pool | 10,000 ops, 32 MiB | At most 64 ops per account, 8 of them behind a nonce gap (no flags) |
 | `--settlement-feerate` | 2 sat/vB | Floor of this node's Bitcoin fee rate: paid while bitcoind's mempool has room, and when bitcoind has no estimate |
 | `--max-settlement-feerate` | 1,000 sat/vB | Cap of this node's Bitcoin fee rate, CPFP bumps included; the rate paid at once while a lighter competing chain is on Bitcoin |

@@ -110,9 +110,8 @@ import {
   VMOP_VERSION,
   accountOf,
   encodeVmOp,
-  feeFor,
   ksaAssetId,
-  opCost,
+  pathBFee,
   signedVmop,
 } from '@ksana/sdk';
 
@@ -136,9 +135,9 @@ export async function transfer(
     max_gas: maxGas,
     action: { kind: 'AssetTransfer', asset: ksaAssetId(), to, amount },
   };
-  // 建议费率按操作成本每 KiB 计：先量出签好名的操作有多大，再签上真正的手续费。
-  const cost = opCost(params, encodeVmOp(signedVmop(unsigned, secretKey)).length, maxGas);
-  const fee = feeFor(estimate.path_b.per_kib, cost, estimate.path_b.amount);
+  // 节点的费率按操作的成本和大小每 KiB 计：先量出签好名的操作有多大，再签上真正的手续费。
+  const size = encodeVmOp(signedVmop(unsigned, secretKey)).length;
+  const fee = pathBFee(params, estimate.path_b, size, maxGas);
   const op = signedVmop({ ...unsigned, fee: { kind: 'Token', amount: fee } }, secretKey);
   const { op_id } = await rpc.submitOp(op); // 节点拒绝时抛出 RpcError -32010 或 -32011
   return op_id;
@@ -146,7 +145,7 @@ export async function transfer(
 ```
 
 - **nonce**：`getAccount` 返回账户的下一个 nonce。节点为每个账户最多排队 64 笔操作，所以要连续发出一批操作时，可以从这个 nonce 往上数。
-- **手续费**：一个固定的 KSA 数额，以最小单位计，操作失败也照扣。`estimateFee` 为普通转账建议 `path_b.amount`，并按操作成本给出每 KiB 的建议值 `path_b.per_kib`；操作的成本是它编码后的大小与它的 gas 上限换算成的字节数两者中较大的那个。建议值随最近的区块变动，signet 节点接受 1 个最小单位。
+- **手续费**：一个固定的 KSA 数额，以最小单位计，操作失败也照扣。`estimateFee` 为普通转账建议 `path_b.amount`，并按操作成本给出每 KiB 的建议值 `path_b.per_kib`；操作的成本是它编码后的大小与它的 gas 上限换算成的字节数两者中较大的那个。运营者设了 KSA 价格的节点还会返回 `path_b.per_kib_data`，只按操作编码后的大小每 KiB 计。`pathBFee` 用这三个值算出一笔操作的手续费。建议值随最近的区块变动，signet 节点接受 1 个最小单位。
 - **gas**：一笔 KSA 转账正好用 10,000 gas。一次调用花 20,000，加上合约代码每字节 1，每附带一种资产再加 10,000，再加上方法本身的用量：见[宿主函数与 gas](/docs/host-functions/)。
 - **拒绝**：操作无效时，`submitOp` 抛出 `RpcError` -32010，比如 nonce 已被用过，或者余额不够付手续费。节点的策略拒绝这笔操作时，它抛出 -32011，比如手续费低于节点的门槛。
 
@@ -165,10 +164,9 @@ import {
   XverseAdapter,
   btcNetworkOf,
   encodeVmOp,
-  feeFor,
   fromHex,
   ksaAssetId,
-  opCost,
+  pathBFee,
   signVmopWithWallet,
 } from '@ksana/sdk';
 
@@ -210,8 +208,8 @@ export async function send(
   };
   // 钱包的签名编码后最多 67 字节：这样不必让钱包签两次，就能算出操作的大小。
   const placeholder = { kind: 'Bip322Simple' as const, bytes: new Uint8Array(67) };
-  const cost = opCost(params, encodeVmOp({ ...unsigned, sig: placeholder }).length, maxGas);
-  const fee = feeFor(estimate.path_b.per_kib, cost, estimate.path_b.amount);
+  const size = encodeVmOp({ ...unsigned, sig: placeholder }).length;
+  const fee = pathBFee(params, estimate.path_b, size, maxGas);
   const final: UnsignedVmOp = { ...unsigned, fee: { kind: 'Token', amount: fee } };
   // 钱包会显示一条待签的消息：写成十六进制的操作签名哈希。
   const op = await signVmopWithWallet(final, wallet);
