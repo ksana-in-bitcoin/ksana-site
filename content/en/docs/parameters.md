@@ -317,6 +317,8 @@ still agree on the chain. [Run a node](/docs/run-a-node/) explains the flags.
 | `--funding-pool-target` | 64 | Confirmed funding outputs to keep, by splitting the largest into pieces of at least 100,000 sats |
 | Settlement batching | On | While a settlement is in flight (carried by a block anchored at most 2 Bitcoin blocks below the tip, `IN_FLIGHT_BTC_BLOCKS`, and not landed yet), new blocks leave their bodies for the next settlement, unless the bodies waiting, or a block's own, pass 10 KiB (`MAX_BLOCK_DATA_BYTES` / `PAYLOAD_BODY_TRIGGER` 8); `--no-settlement-batching` makes every block that needs a body carry its own settlement |
 | Pruning | On | The pruning root is the highest block decided final at least 144 Bitcoin blocks below the tip (`PRUNE_BTC_MARGIN`), and a node prunes again once the pruning point can advance 1,000 blue score (`PRUNE_STEP`); `--no-pruning` keeps everything |
+| Compiled contract code | 16,384 MiB on disk | Kept in `vm-cache` under the data directory and read back instead of compiled again; `--vm-code-cache-mib`, `0` keeps none |
+| Contract memory pool | 1 call | Contract calls that take their memory from a pool kept resident, up to 1 GiB each; `--vm-pooled-calls`, `0` turns it off |
 | Orphan pool | 256 blocks, 32 MiB | `MAX_ORPHANS`, `MAX_ORPHAN_BYTES` |
 | P2P connections | 100 inbound, 32 in the handshake | At most 4 inbound from one address (an IPv6 address by its /64) and 2 with one peer; loopback and private addresses count only in the totals (no flags) |
 | P2P quotas | Blocks 20/s, ops 1,000/s, sync requests 50/s | Token buckets of the address a peer connects from, with bursts of 100, 5,000 and 200, kept across reconnections; a peer banned by score (3 points, for 60 seconds) bans its address too |
