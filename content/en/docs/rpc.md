@@ -175,7 +175,7 @@ rpc $NODE ksana_estimateFee | jq .result
 ```
 
 - `feerate_sat_vb` is the fee rate, in sat/vB, at which this node pays for its settlements now. Use it as a reference for path C transactions and top-ups.
-- `path_b.per_kib` is a suggested fee rate for path B: base units of KSA per KiB of cost. The cost of an op is the larger of its encoded size and its `max_gas` converted to bytes (`max_gas × 81,920 / 100,000,000`). The node takes the median, over its last 20 main-chain blocks, of each block’s lowest path B fee rate, and never goes below its own `--min-fee-per-kib`.
+- `path_b.per_kib` is a suggested fee rate for path B: base units of KSA per KiB of cost. The cost of an op is the larger of its encoded size and its `max_gas` converted to bytes (`max_gas × 81,920 / 100,000,000`). The node takes the median, over its last 20 main-chain blocks, of each block’s lowest path B fee rate, and never goes below its own `--min-fee-per-kib`. A node run with `--ksa-price-sat` does not go below the KSA worth 256 vB at `feerate_sat_vb` either, which is the floor its producer packs by.
 - `path_b.amount` is the suggested fee of an ordinary KSA transfer at that rate, never below the node’s `--min-token-fee`. For another op, multiply its cost by `per_kib`.
 - `at` is the tip the estimate was read at.
 
