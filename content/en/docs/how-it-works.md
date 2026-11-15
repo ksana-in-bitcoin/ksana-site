@@ -39,7 +39,7 @@ GHOSTDAG also colors blocks blue or red. A blue block was visible to the rest of
 
 Every block names a Bitcoin block, its **anchor**. A producer anchors `ANCHOR_DEPTH` blocks below its Bitcoin tip (1 on signet, 2 on mainnet, 0 on devnet) and never below the anchors of the block’s parents. Execution reads Bitcoin only up to the anchor: the path C transactions a block must include, the Bitcoin headers a contract may read, and which blocks’ data has landed. So every node computes the same result whatever its own Bitcoin tip.
 
-The depth absorbs shallow Bitcoin reorganizations: one of at most `ANCHOR_DEPTH` blocks orphans no anchor, so the main chain and its state stay as they are. A deeper one takes the blocks anchored on the orphaned Bitcoin blocks off the main chain, and their path B operations return to the entry pool to be included again with the same op ID.
+The depth absorbs shallow Bitcoin reorganizations: one of at most `ANCHOR_DEPTH` blocks orphans no anchor, so the main chain and its state stay as they are. A deeper one takes the blocks anchored on the orphaned Bitcoin blocks off the main chain, and their path B operations return to the entry pool to be included again with the same op ID, on the nodes that hold [the second halves of their signatures](/docs/submitting-ops/#signatures-in-a-block).
 
 ## Settlement into Bitcoin
 
@@ -98,7 +98,7 @@ A producer may refuse path B operations, but a block that leaves out a path C op
 Wallets and apps call a node’s JSON-RPC, nodes anchor to Bitcoin and land their settlements there, and the indexer rebuilds the chain from bitcoind alone and checks the state roots.
 :::
 
-The indexer connects only to bitcoind, never to a Ksana node. It reads the payloads on Bitcoin, rebuilds the block DAG, chooses the main chain by the same rules as the nodes, executes every block with the same code and checks each block’s state root against its header. It runs the same finality function and reports the same `finalized` block.
+The indexer connects only to bitcoind, never to a Ksana node. It reads the payloads on Bitcoin, rebuilds the block DAG, chooses the main chain by the same rules as the nodes, executes every block with the same code and checks each block’s state root against its header. The signatures are among what it checks: a block on Bitcoin holds half of each path B signature and one aggregate for the rest, and the indexer verifies that aggregate. It runs the same finality function and reports the same `finalized` block.
 
 So the record does not depend on any Ksana node staying online or honest: if every node vanished, anyone could rebuild the full state from Bitcoin. The indexer disqualifies a block with an invalid body or a wrong state root and chooses its main chain again. [Run an indexer](/docs/run-an-indexer/) shows how to run one and compare it with a node.
 

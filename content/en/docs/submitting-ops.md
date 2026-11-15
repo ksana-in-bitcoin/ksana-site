@@ -28,7 +28,7 @@ The action is one of three:
 - `Call { contract, method, args, funds }` calls a contract method with Borsh-encoded arguments.
 - `Deploy { code, init_args, funds }` deploys WebAssembly code and runs its `init`.
 
-`funds` attaches up to 16 built-in assets to a call or a deployment, in ascending order of asset ID and each above zero; they move to the contract before it runs. An operation is encoded with Borsh, at most 65,536 bytes, and its op ID is the SHA-256 of the whole encoding, signature included.
+`funds` attaches up to 16 built-in assets to a call or a deployment, in ascending order of asset ID and each above zero; they move to the contract before it runs. An operation is encoded with Borsh, at most 65,536 bytes. The op ID of a path C operation is the SHA-256 of the whole encoding, signature included; the op ID of a path B operation is the SHA-256 of the encoding with the first half of its signature, the form a block holds it in (see [Signatures in a block](#signatures-in-a-block)).
 
 ## Two paths in
 
@@ -49,7 +49,7 @@ Use path B for everyday work. Use path C when you hold no KSA, when no producer 
 
 Sign the operation with `fee: Token { amount }` and submit it to any node with `ksana_submitOp`. The node checks it (format, chain ID, signature, a nonce not below the account’s, a balance that covers the fees of all your queued operations), keeps it in its entry pool and passes it to its peers. A node that produces blocks answers only once the operation is in its next block template, so a producer usually includes it within seconds, and later pays the Bitcoin fee to land it.
 
-A refusal comes back as an error: `-32010` for an operation that breaks a consensus rule (a path C operation sent here among them), `-32011` for one that this node’s policy turns down, such as a fee below its floor, a full pool or a replacement that does not raise the fee enough.
+A refusal comes back as an error: `-32010` for an operation that breaks a consensus rule (a path C operation sent here among them, and one sent with half a signature), `-32011` for one that this node’s policy turns down, such as a fee below its floor, a full pool or a replacement that does not raise the fee enough.
 
 The fee is taken before the operation runs and is kept even when the operation fails. It stays locked with the block until the block’s data is on Bitcoin, then half goes to the block’s carrier and the rest to its producer; when the producer carried its own block, or nobody qualifies as carrier, the producer takes all of it ([KSA and rewards](/docs/ksa/)).
 
@@ -94,6 +94,18 @@ ksana-cli --chain signet estimate-fee
 ### The entry pool
 
 The entry pool is local policy too: by default a node’s pool holds up to 10,000 operations or 32 MiB, and up to 64 operations per account, numbered from the account’s nonce, at most 8 of them behind a gap in the numbering. A new operation with the same account and nonce replaces the waiting one only with a fee at least a tenth higher, and higher by at least the node’s relay floor; the refusal names the least fee that does. When the pool is full, it evicts the operations that stand lowest (behind a nonce gap first, then by fee rate) instead of refusing newcomers. A replaced or evicted operation is gone, and its op ID answers `-32004`.
+
+### Signatures in a block {#signatures-in-a-block}
+
+You sign and submit an operation with its whole signature, and pools and peers hold it that way. A block holds less. A BIP340 signature has two halves of 32 bytes; the producer keeps the first half of each path B signature in the operation’s entry and ends the block with one more entry, the **aggregate**: 32 bytes that stand for all the second halves (BIP340 half-aggregation). The header’s `entries_root` covers the halves and the aggregate, and this is the form that goes onto Bitcoin, so the n path B signatures of a block take 32n + 32 bytes there instead of 64n.
+
+Every node, and the indexer from Bitcoin alone, checks the aggregate against all the path B operations of the block at once, and a block whose aggregate fails is invalid. An aggregate that verifies cannot be made for an operation its account did not sign. What changes for you:
+
+- **The op ID** of a path B operation is taken over the form with half the signature, so it is the same before and after inclusion. `ksana_submitOp` returns it.
+- **One signature alone** cannot be checked from a block or from Bitcoin, only all of a block’s together. Keep the signed operation if you need to show its signature by itself.
+- **After a reorganization** a node returns a block’s path B operations to its pool only if it holds their second halves. These travel between nodes beside the block and are not on Bitcoin, so a node that rebuilt the block from Bitcoin has none, and there the operation has to be submitted again.
+
+Path C operations are not aggregated: each carries its whole signature in its own Bitcoin transaction. The rules are in [SPEC §4.5]({{repo}}/blob/main/docs/SPEC.md#45-half-aggregated-signatures-in-a-block-d-154).
 
 ## Path C: native
 
@@ -151,7 +163,7 @@ Three different things can go wrong, and only the first is about your operation:
 
 - **A failed operation** is included, but its execution fails: out of gas, a contract trap or revert, invalid attached funds, an insufficient balance. Its receipt has `success: false` and `gas_used` equal to `max_gas`; the fee is charged and the nonce used, and every other change and event is rolled back. A path C operation that fails its checks (version, chain ID, length, fee mode, signature or nonce) fails too, but leaves the nonce unchanged. The block stays valid.
 - **A skipped entry** sits in a merged block and cannot run where the merge puts it, for example because another block already ran the same operation. It pays nothing and changes nothing, and an operation that is still valid returns to the pool.
-- **An invalid block** breaks a consensus rule: a bad signature, a wrong nonce among its own entries, a missing path C entry or a wrong state root. Nodes refuse it or keep it off the main chain, so an operation in it counts only where a valid block runs it.
+- **An invalid block** breaks a consensus rule: an aggregate that does not verify over its path B signatures, a wrong nonce among its own entries, a missing path C entry or a wrong state root. Nodes refuse it or keep it off the main chain, so an operation in it counts only where a valid block runs it.
 
 A **local fault**, such as a storage or bitcoind error, is none of these: the node retries and never judges a block invalid because of one.
 

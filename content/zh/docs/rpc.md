@@ -352,7 +352,7 @@ rpc $NODE ksana_getAssetStatus "[\"$KSA\", \"$ACCOUNT\"]" | jq .result
 
 ### `ksana_submitOp`
 
-参数：一个签好名的路径 B VmOp，经 Borsh 编码，写成十六进制。结果：`{ "op_id" }`。
+参数：一个带完整签名的路径 B VmOp，经 Borsh 编码，写成十六进制。结果：`{ "op_id" }`，即只带半个签名的操作的哈希，区块里保存的就是这种形式。
 
 节点按共识规则（版本、链 ID、大小、签名、nonce 不低于账户的 nonce）和它自己的策略（最低手续费、容量）检查这个操作。出块的节点要等这个操作进了它的下一个出块模板才应答，最多等 5 秒。
 
@@ -565,8 +565,8 @@ rpc $NODE ksana_getBlock '["33"]' | jq '.result | del(.entries, .receipts)'
 ```
 
 - `header.parents` 列出这个区块在区块 DAG 中的父块；`btc_anchor` 是它锚定的比特币区块；`producer` 是出这个区块的账户。
-- `entries` 列出区块的条目，每个条目都是只有一个键的对象：`Sponsored`（路径 B 操作）、`Forced`（路径 C 操作，附带携带它的 `btc_txid`）或 `Unlock`。
-- `receipts` 为每个条目给出一张回执，取自主链接受这个区块之时。`error` 以 `skipped` 开头的条目没有执行。
+- `entries` 列出区块的条目，每个条目都是只有一个键的对象：`Sponsored`（路径 B 操作）、`Forced`（路径 C 操作，附带携带它的 `btc_txid`）、`Unlock`，或 `Aggregate`，即 `{ "s": "<32 bytes>" }`：有路径 B 操作的区块以它作为最后一个条目，它代表这些操作签名的后一半（见[区块里的签名](/docs/submitting-ops/#signatures-in-a-block)）。
+- `receipts` 为每个条目给出一张回执，取自主链接受这个区块之时；聚合值条目的回执是一次成功，没有 `op_id`。`error` 以 `skipped` 开头的条目没有执行。
 - `settlement` 是这个区块自带的提交交易和揭示交易，`{ "commit", "reveal" }`，写成十六进制；区块不带结算交易时为 `null`。
 - `accepted_height` 是接受这个区块的主链区块的高度：主链上的区块就是它自己的高度，被合并的区块是合并它的那个区块的高度，还没有主链区块接受它时为 `null`。
 - `merged` 列出它合并的区块，顺序就是这些区块的条目执行的顺序。
@@ -605,7 +605,7 @@ rpc $NODE ksana_getBlock '["33"]' | jq '.result.entries[0].Sponsored.op | del(.s
 }
 ```
 
-用密钥签名时，`sig` 是 `{"Bip340": "<64 bytes>"}`；用钱包签名时，它是 `{"Bip322Simple": "<bytes>"}`。路径 B 的 `fee` 是 `{"Token": {"amount"}}`，路径 C 的是 `"BtcNative"`。`action` 是 `Deploy`、`Call` 或 `AssetTransfer`。
+用密钥签名时，`sig` 是 `{"Bip340": "<64 bytes>"}`；用钱包签名时，它是 `{"Bip322Simple": "<bytes>"}`。这两种是完整签名，提交操作时用它们，路径 C 操作也一直是它们；区块里的路径 B 操作只带签名的前一半：密钥签名是 `{"HalfBip340": "<32 bytes>"}`，钱包签名是 `{"HalfBip322": "<32 bytes>"}` 或 `{"HalfBip322All": "<32 bytes>"}`。路径 B 的 `fee` 是 `{"Token": {"amount"}}`，路径 C 的是 `"BtcNative"`。`action` 是 `Deploy`、`Call` 或 `AssetTransfer`。
 
 ### `ksana_getSettlement`
 

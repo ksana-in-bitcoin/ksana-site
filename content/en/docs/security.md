@@ -138,7 +138,8 @@ A producer can mine a block and never put its data on Bitcoin. Ksana answers in 
 
 Producers anchor `ANCHOR_DEPTH` blocks below their Bitcoin tip, so a Bitcoin reorg of at most that depth (1 on signet,
 2 on mainnet) moves no Ksana block. A deeper reorg takes the Ksana blocks anchored on the orphaned Bitcoin blocks off
-the main chain. Their path B operations return to the entry pool and are included again on the new branch with the
+the main chain. Their path B operations return to the entry pool, on the nodes that hold
+[the second halves of their signatures](/docs/submitting-ops/#signatures-in-a-block), and are included again on the new branch with the
 same op ID; their path C operations are included again once their transactions confirm on the new chain, or are gone
 if the reorg double-spent them.
 

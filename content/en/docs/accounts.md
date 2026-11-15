@@ -56,6 +56,8 @@ Every operation carries a signature by its account. Two forms are accepted, and 
 
 The signature hash is a tagged hash (`Ksana/VmOp/v1`) of the operation without its signature; for path C it also covers the outpoint that the carrying Bitcoin transaction’s first input spends. The tag keeps a Ksana signature from ever being valid as a Bitcoin transaction signature. The chain ID in the operation keeps it from being replayed on another network, and the nonce keeps it from running twice on this one.
 
+Both forms end in one Schnorr signature of 64 bytes. You submit it whole; a block keeps the first half of a path B operation’s signature and one aggregate for the second halves of all of them, which is verified for the block as a whole ([Signatures in a block](/docs/submitting-ops/#signatures-in-a-block)).
+
 ::: danger Read what you sign
 The protection is one-way. A page that asks your wallet for a BIP322 signature of a “random” string of 64 hex digits may be showing you the signature hash of a Ksana operation that spends your KSA. Sign Ksana operations only where you see the decoded operation first, as the [signet wallet](/docs/wallet/) shows it before you sign.
 :::

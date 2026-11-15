@@ -352,7 +352,7 @@ Parameters: `account`, `after` (optional), `limit` (optional). The approvals the
 
 ### `ksana_submitOp`
 
-Parameter: a signed path B VmOp, Borsh-encoded, in hex. Result: `{ "op_id" }`.
+Parameter: a path B VmOp with its whole signature, Borsh-encoded, in hex. Result: `{ "op_id" }`, the hash of the op with half its signature, which is how a block holds it.
 
 The node checks the op against the consensus rules (version, chain ID, size, signature, a nonce not below the account’s) and against its own policy (minimum fee, capacity). A producing node answers once the op is in its next block template, or after 5 seconds at most.
 
@@ -565,8 +565,8 @@ rpc $NODE ksana_getBlock '["33"]' | jq '.result | del(.entries, .receipts)'
 ```
 
 - `header.parents` lists the block’s parents in the block DAG; `btc_anchor` is the Bitcoin block it anchors to; `producer` is the account that made it.
-- `entries` lists the block’s entries, each an object with one key: `Sponsored` (a path B op), `Forced` (a path C op with the `btc_txid` that carried it) or `Unlock`.
-- `receipts` holds one receipt per entry, from when the main chain accepted the block. An entry whose `error` starts with `skipped` was not executed.
+- `entries` lists the block’s entries, each an object with one key: `Sponsored` (a path B op), `Forced` (a path C op with the `btc_txid` that carried it), `Unlock`, or `Aggregate`, `{ "s": "<32 bytes>" }`: the last entry of a block that has a path B op, which stands for the second halves of their signatures ([Signatures in a block](/docs/submitting-ops/#signatures-in-a-block)).
+- `receipts` holds one receipt per entry, from when the main chain accepted the block; the aggregate entry’s is a success without an `op_id`. An entry whose `error` starts with `skipped` was not executed.
 - `settlement` holds the block’s own commit and reveal transactions, `{ "commit", "reveal" }`, as hex, or `null` when it carries none.
 - `accepted_height` is the height of the main-chain block that accepted this one: its own height on the main chain, the merging block’s height for a merged block, `null` while no main-chain block has accepted it.
 - `merged` lists the blocks it merges, in the order their entries run.
@@ -605,7 +605,7 @@ rpc $NODE ksana_getBlock '["33"]' | jq '.result.entries[0].Sponsored.op | del(.s
 }
 ```
 
-`sig` is `{"Bip340": "<64 bytes>"}` for a key signature or `{"Bip322Simple": "<bytes>"}` for a wallet signature. `fee` is `{"Token": {"amount"}}` for path B and `"BtcNative"` for path C. `action` is `Deploy`, `Call` or `AssetTransfer`.
+`sig` is `{"Bip340": "<64 bytes>"}` for a key signature or `{"Bip322Simple": "<bytes>"}` for a wallet signature. Those are the whole signatures, as an op is submitted and as a path C op stays; a path B op in a block has the first half of its signature, `{"HalfBip340": "<32 bytes>"}` for a key signature, `{"HalfBip322": "<32 bytes>"}` or `{"HalfBip322All": "<32 bytes>"}` for a wallet signature. `fee` is `{"Token": {"amount"}}` for path B and `"BtcNative"` for path C. `action` is `Deploy`, `Call` or `AssetTransfer`.
 
 ### `ksana_getSettlement`
 
