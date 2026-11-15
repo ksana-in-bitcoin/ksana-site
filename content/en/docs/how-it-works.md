@@ -78,7 +78,7 @@ What this means when someone builds a competing fast-lane chain:
 
 - Until a block is final, a heavier chain can replace it. That is the risk you weigh when you accept a fast confirmation.
 - A heavier chain that keeps its data off Bitcoin cannot become final. A lighter chain that lands its data in time is finalized first, and the heavier one is finalized out.
-- When a lighter competing chain appears on Bitcoin and a node’s own chain is still missing there one Bitcoin block later, the node republishes its headers at the next-block fee rate, so the honest chain lands before the other side’s data has six confirmations.
+- When a lighter competing chain appears on Bitcoin and a node’s own chain is still missing there one Bitcoin block later, the node republishes its headers at its highest fee rate, so the honest chain lands before the other side’s data has six confirmations.
 - Fast-lane hashrate alone cannot undo a final block: that takes a Bitcoin reorganization of at least 6 blocks, reaching the Bitcoin block that decided it, and every Bitcoin block mined after that makes the reorganization deeper. [Security](/docs/security/#bitcoin-reorgs) covers Bitcoin reorgs.
 
 Only a valid block is decided final. A block whose anchor, or the anchor of a block it merges, is not on the Bitcoin best chain is excluded first, and a block whose execution is invalid is excluded together with every block built on it; the function then takes the next best chain. Every node’s main chain must pass through the blocks decided final, and a node that lacks one rebuilds it from the data on Bitcoin. `ksana_getChainInfo` reports the newest final block as `finalized`.

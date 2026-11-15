@@ -155,7 +155,7 @@ dictionary of keys. In a run of empty blocks, each header after the first takes 
 
 A fork that is lighter than a node's main chain but has put more chain work on Bitcoin than the node's own chain has
 so far. If that is still so one Bitcoin block after it appeared, the node republishes its own headers up to its tip at
-the next-block fee rate, so that the heavier chain lands in time to become final. See
+its highest fee rate (`--max-settlement-feerate`), so that the heavier chain lands in time to become final. See
 [Security](/docs/security/#competing-chains).
 
 ### Contract

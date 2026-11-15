@@ -96,8 +96,8 @@ headers on Bitcoin first, while the network is idle or while honest settlements 
 lighter chain's blocks reach 6 confirmations first.
 
 When such a chain has been on Bitcoin for one Bitcoin block and a node's own chain there is still lighter, the node
-republishes its headers up to its tip at the next-block fee rate (up to `--max-settlement-feerate`) and bumps its own
-waiting settlements to that rate with a child transaction spending their reveal’s change. Once the honest chain is connected on Bitcoin, the candidate
+republishes its headers up to its tip at its highest fee rate (`--max-settlement-feerate`, 1,000 sat/vB by default) and bumps its own
+waiting settlements towards that rate with a child transaction spending their reveal’s change; a wallet that cannot pay that much pays what it can. Once the honest chain is connected on Bitcoin, the candidate
 with more chain work is decided final. What remains is the case where no operator pays to land the honest chain's data
 for 6 Bitcoin blocks.
 
@@ -122,8 +122,8 @@ A producer can mine a block and never put its data on Bitcoin. Ksana answers in 
 - **Anyone can land it.** Any node can rebuild the settlement with its own funding (a rescue) or republish the data:
   the block's producer goes first, then the producers of the main-chain blocks after it, then every other node. A
   settlement claim in the Bitcoin mempool holds a rescue back for at most 8 Bitcoin blocks (`CLAIM_PATIENCE`), and a
-  node bumps a settlement of its own that waits 2 Bitcoin blocks below bitcoind's fee estimate, or 2 Bitcoin blocks at
-  all while the mempool has room (`BUMP_AFTER`).
+  node bumps a settlement of its own that waits 2 Bitcoin blocks, to bitcoind's fee estimate or to twice its own rate,
+  whichever is higher, and twice as much again for every further block (`BUMP_AFTER`).
 - **Nobody is paid until it lands.** Rewards and path B fees unlock only once a block and its whole past are settled,
   so every later producer has a reason to land the missing data. The carrier's share goes to the producer whose
   settlement first carries the data, or to the payee of a republish that lands it more than `ANCHOR_DEPTH` + 2 Bitcoin
