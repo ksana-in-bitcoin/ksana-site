@@ -42,6 +42,8 @@ target/release/ksana-indexer --chain signet --data-dir ~/ksana-signet/indexer \
 | `--rpc-addr <IP:PORT>` | `127.0.0.1:8546` | JSON-RPC 的监听地址。 |
 | `--poll-ms <ms>` | `500` | 两轮读取 bitcoind 之间的间隔。 |
 | `--no-pruning` | 剪枝开启 | 把全部历史保留在内存里。 |
+| `--vm-code-cache-mib <MiB>` | `16384` | 数据目录下 `vm-cache` 里保存的合约编译结果的大小上限；`0` 表示不保存。 |
+| `--vm-pooled-calls <N>` | `1` | 从保持驻留的内存池取内存的合约调用数（每个最多 1 GiB）；`0` 表示关闭内存池。 |
 
 索引器没有 CORS 选项：浏览器页面只能通过与页面同源的代理访问它，托管钱包用 `{{signet.indexer}}` 就是这样做的。
 

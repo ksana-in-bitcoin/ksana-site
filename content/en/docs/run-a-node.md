@@ -240,6 +240,12 @@ Pruning is on by default and keeps the node’s memory bounded. Once a block has
 
 `--no-pruning` keeps the whole history in memory, which grows with the chain. On Linux the node allocates with jemalloc and bounds RocksDB’s write buffers and cache; at each pruning it logs RocksDB’s memory use.
 
+## Contract code and memory
+
+The node keeps the compiled code of every contract it has run in `vm-cache` under the data directory, so a contract is compiled once and read back after a restart. `--vm-code-cache-mib` bounds the directory (16,384 by default; `0` keeps none); past the limit the files used least recently are deleted and compiled again when called. The files are loaded as machine code: keep the directory writable by the node alone, as you do its binary.
+
+Contract instances take their memory from a pool the node keeps resident instead of asking the operating system for new pages each time. `--vm-pooled-calls` is the number of contract calls that use the pool at once (1 by default; `0` turns it off); a further call waits. Each may keep up to 1 GiB resident once contracts have used that much. The pool clears memory fastest on Linux 6.7 and later. If the pool cannot be set up, the node says so in its log and runs without it. Neither option changes what a block computes.
+
 A Bitcoin reorganization deeper than what a pruned node keeps stops it with a message that it must be resynced: start it again with an empty data directory. Such a reorganization would have to undo blocks that were final for a day.
 
 ## Common startup errors

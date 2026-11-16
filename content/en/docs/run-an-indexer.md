@@ -42,6 +42,8 @@ target/release/ksana-indexer --chain signet --data-dir ~/ksana-signet/indexer \
 | `--rpc-addr <IP:PORT>` | `127.0.0.1:8546` | Where the JSON-RPC listens. |
 | `--poll-ms <ms>` | `500` | The pause between two rounds of reading bitcoind. |
 | `--no-pruning` | pruning on | Keep the whole history in memory. |
+| `--vm-code-cache-mib <MiB>` | `16384` | The size limit of the compiled contract code kept in `vm-cache` under the data directory; `0` keeps none. |
+| `--vm-pooled-calls <N>` | `1` | Contract calls that take their memory from a pool kept resident (up to 1 GiB each); `0` turns the pool off. |
 
 The indexer has no CORS option: a browser page reaches it only through a proxy on the page’s own origin, as the hosted wallet does with `{{signet.indexer}}`.
 
