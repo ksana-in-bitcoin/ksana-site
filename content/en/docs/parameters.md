@@ -306,11 +306,11 @@ still agree on the chain. [Run a node](/docs/run-a-node/) explains the flags.
 | `--min-fee-per-kib` | 0 | Smallest fee rate this node packs, in base units per KiB of cost |
 | Entry pool | 10,000 ops, 32 MiB | At most 64 ops per account, 8 of them behind a nonce gap (no flags) |
 | `--settlement-feerate` | 2 sat/vB | Floor of this node's Bitcoin fee rate: paid while bitcoind's mempool has room, and when bitcoind has no estimate |
-| `--max-settlement-feerate` | 100 sat/vB | Cap of this node's Bitcoin fee rate, CPFP bumps and competing-chain races included |
-| `--settlement-conf-target` | 3 Bitcoin blocks | Target of `estimatesmartfee`; 1 while a lighter competing chain is on Bitcoin |
+| `--max-settlement-feerate` | 1,000 sat/vB | Cap of this node's Bitcoin fee rate, CPFP bumps included; the rate paid at once while a lighter competing chain is on Bitcoin |
+| `--settlement-conf-target` | 3 Bitcoin blocks | Target of `estimatesmartfee`; not asked while a lighter competing chain is on Bitcoin, when the node pays the cap |
 | Room in the mempool | 500,000 vB | While bitcoind's mempool holds at most half a block (`ROOMY_MEMPOOL_VSIZE`) and the last Bitcoin block was at most half full, this node's new Bitcoin transactions pay the floor, or the mempool's minimum when that is higher, instead of the estimate; not while a lighter competing chain is on Bitcoin |
 | `ROOMY_BLOCK_WEIGHT` | 2,000,000 weight units | The most bitcoind's best block may have taken (`getblockstats`) for the next block to count as having room |
-| `BUMP_AFTER` | 2 Bitcoin blocks | A settlement pair this node sent that waits this long below bitcoind's estimate is bumped to it by a child transaction spending the reveal's change; while the mempool has room, one still waiting is bumped to at least twice its own rate, doubling for every further block, up to the cap |
+| `BUMP_AFTER` | 2 Bitcoin blocks | A settlement pair this node sent that waits this long below bitcoind's estimate is bumped to it by a child transaction spending the reveal's change; with or without room in the mempool, one still waiting is bumped to at least twice its own rate, doubling for every further block, up to the cap. A change that cannot pay the rate pays what it can |
 | `BUMP_GRACE` | 2 minutes | A pair that waited while the next block showed room, and that a Bitcoin block found this long or more after the node first saw it waiting leaves out, is bumped at once to at least the next-block estimate |
 | `ROOM_DISTRUST_BLOCKS` | 6 Bitcoin blocks | After a Bitcoin block leaves such a pair out, the node's new transactions pay the estimate for this many blocks, whatever room shows; kept in memory only |
 | `CLAIM_PATIENCE` | 8 Bitcoin blocks | Longest a settlement claim in the Bitcoin mempool holds back a rescue (`RESCUE_ORDER_WINDOW` 6 + `RESCUE_DELAY` 2) |
