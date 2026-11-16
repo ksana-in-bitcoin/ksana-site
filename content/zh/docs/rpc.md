@@ -176,7 +176,7 @@ rpc $NODE ksana_estimateFee | jq .result
 
 - `feerate_sat_vb` 是本节点眼下为自己的结算支付的费率，单位 sat/vB。路径 C 交易和充值可以拿它作参考。
 - `path_b.per_kib` 是路径 B 的建议费率：每 KiB 成本多少个 KSA 最小单位。一笔操作的成本，是它编码后的大小与它的 `max_gas` 换算成的字节数（`max_gas × 81,920 / 100,000,000`）两者中较大的那个。节点在它最近的 20 个主链区块中，取每个区块最低的路径 B 费率，再取这些费率的中位数，而且从不低于它自己的 `--min-fee-per-kib`。
-- `path_b.per_kib_data` 只有设了 `--ksa-price-sat` 的节点才会返回：操作编码后的大小每 KiB 多少个 KSA 最小单位，与它的 `max_gas` 无关。它是按 `feerate_sat_vb` 和运营者给的价格算出的 256 vB 所值的 KSA，也就是这个节点的出块者把操作的字节写进比特币所要的价钱。返回值里没有这个字段时，按 0 处理。
+- `path_b.per_kib_data` 只有设了 `--ksa-price-sat` 的节点才会返回：操作编码后的大小每 KiB 多少个 KSA 最小单位，与它的 `max_gas` 无关。它是按 `feerate_sat_vb` 和运营者给的价格算出的 128 vB 所值的 KSA，也就是这个节点的出块者把操作的字节写进比特币所要的价钱。返回值里没有这个字段时，按 0 处理。
 - `path_b.amount` 是一笔普通 KSA 转账的建议手续费：它的成本按 `per_kib` 计、它的大小按 `per_kib_data` 计，取两者中较大的，且不会低于节点的 `--min-token-fee`。对于别的操作，用它的成本乘以 `per_kib`、它的大小乘以 `per_kib_data`，各自除以 1,024 并向上取整，取较大的那个，且不低于 `amount`。
 - `at` 是这次估算所依据的链顶。
 
@@ -352,7 +352,7 @@ rpc $NODE ksana_getAssetStatus "[\"$KSA\", \"$ACCOUNT\"]" | jq .result
 
 ### `ksana_submitOp`
 
-参数：一个签好名的路径 B VmOp，经 Borsh 编码，写成十六进制。结果：`{ "op_id" }`。
+参数：一个带完整签名的路径 B VmOp，经 Borsh 编码，写成十六进制。结果：`{ "op_id" }`，即只带半个签名的操作的哈希，区块里保存的就是这种形式。
 
 节点按共识规则（版本、链 ID、大小、签名、nonce 不低于账户的 nonce）和它自己的策略（最低手续费、容量）检查这个操作。出块的节点要等这个操作进了它的下一个出块模板才应答，最多等 5 秒。
 
@@ -565,8 +565,8 @@ rpc $NODE ksana_getBlock '["33"]' | jq '.result | del(.entries, .receipts)'
 ```
 
 - `header.parents` 列出这个区块在区块 DAG 中的父块；`btc_anchor` 是它锚定的比特币区块；`producer` 是出这个区块的账户。
-- `entries` 列出区块的条目，每个条目都是只有一个键的对象：`Sponsored`（路径 B 操作）、`Forced`（路径 C 操作，附带携带它的 `btc_txid`）或 `Unlock`。
-- `receipts` 为每个条目给出一张回执，取自主链接受这个区块之时。`error` 以 `skipped` 开头的条目没有执行。
+- `entries` 列出区块的条目，每个条目都是只有一个键的对象：`Sponsored`（路径 B 操作）、`Forced`（路径 C 操作，附带携带它的 `btc_txid`）、`Unlock`，或 `Aggregate`，即 `{ "s": "<32 bytes>" }`：有路径 B 操作的区块以它作为最后一个条目，它代表这些操作签名的后一半（见[区块里的签名](/docs/submitting-ops/#signatures-in-a-block)）。
+- `receipts` 为每个条目给出一张回执，取自主链接受这个区块之时；聚合值条目的回执是一次成功，没有 `op_id`。`error` 以 `skipped` 开头的条目没有执行。
 - `settlement` 是这个区块自带的提交交易和揭示交易，`{ "commit", "reveal" }`，写成十六进制；区块不带结算交易时为 `null`。
 - `accepted_height` 是接受这个区块的主链区块的高度：主链上的区块就是它自己的高度，被合并的区块是合并它的那个区块的高度，还没有主链区块接受它时为 `null`。
 - `merged` 列出它合并的区块，顺序就是这些区块的条目执行的顺序。
@@ -605,7 +605,7 @@ rpc $NODE ksana_getBlock '["33"]' | jq '.result.entries[0].Sponsored.op | del(.s
 }
 ```
 
-用密钥签名时，`sig` 是 `{"Bip340": "<64 bytes>"}`；用钱包签名时，它是 `{"Bip322Simple": "<bytes>"}`。路径 B 的 `fee` 是 `{"Token": {"amount"}}`，路径 C 的是 `"BtcNative"`。`action` 是 `Deploy`、`Call` 或 `AssetTransfer`。
+用密钥签名时，`sig` 是 `{"Bip340": "<64 bytes>"}`；用钱包签名时，它是 `{"Bip322Simple": "<bytes>"}`。这两种是完整签名，提交操作时用它们，路径 C 操作也一直是它们；区块里的路径 B 操作只带签名的前一半：密钥签名是 `{"HalfBip340": "<32 bytes>"}`，钱包签名是 `{"HalfBip322": "<32 bytes>"}` 或 `{"HalfBip322All": "<32 bytes>"}`。路径 B 的 `fee` 是 `{"Token": {"amount"}}`，路径 C 的是 `"BtcNative"`。`action` 是 `Deploy`、`Call` 或 `AssetTransfer`。
 
 ### `ksana_getSettlement`
 

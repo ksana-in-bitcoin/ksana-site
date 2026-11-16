@@ -47,7 +47,7 @@ What to watch for when you read them:
 
 Your operation has executed on the node’s main chain: balances and contract state include it, and later operations build on it. Only the fast lane’s proof of work protects it. Until its block is final, a heavier fast-lane chain can replace the block, and a payment is reversed if the sender gets a conflicting operation (another one with the same nonce) into that chain.
 
-A Bitcoin reorganization can also take a fast-confirmed block back. One of at most `ANCHOR_DEPTH` blocks (1 on signet, 2 on mainnet) orphans no anchor and leaves the main chain as it is, and a deeper one takes the blocks anchored on the orphaned Bitcoin blocks off the main chain. Their path B operations return to the entry pool and are included again with the same op ID, so an honest payment comes back by itself; only a sender who gets a different operation with the same nonce in first turns such a reorganization into a reversal.
+A Bitcoin reorganization can also take a fast-confirmed block back. One of at most `ANCHOR_DEPTH` blocks (1 on signet, 2 on mainnet) orphans no anchor and leaves the main chain as it is, and a deeper one takes the blocks anchored on the orphaned Bitcoin blocks off the main chain. Their path B operations return to the entry pool and are included again with the same op ID, so an honest payment comes back by itself (on a node that rebuilt the block from Bitcoin and so lacks [the second halves of its signatures](/docs/submitting-ops/#signatures-in-a-block), it does not, and the sender submits it again); only a sender who gets a different operation with the same nonce in first turns such a reorganization into a reversal.
 
 ### On Bitcoin {#on-bitcoin}
 

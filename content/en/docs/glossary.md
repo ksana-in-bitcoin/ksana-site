@@ -345,6 +345,12 @@ parent, colors merged blocks blue or red, and puts every block in one order. Ksa
 
 ## H
 
+### Half-aggregation
+
+How a block holds its path B signatures: the first half of each (32 bytes) in the operation's entry, and one
+aggregate entry of 32 bytes at the block's end that stands for all the second halves. The block is valid only when
+the aggregate verifies against all of them together. See [Signatures in a block](/docs/submitting-ops/#signatures-in-a-block).
+
 ### Halving period
 
 A stretch of DAA score during which each reward slot pays the same; the reward halves with each new period. On mainnet
@@ -513,8 +519,9 @@ nonces and several top-ups can confirm in any order. See [Operations and fees](/
 
 ### Op ID
 
-The SHA-256 hash of an operation's full encoding, signature included (`op_id`). You track an operation by it. See
-[Operations and fees](/docs/submitting-ops/).
+The SHA-256 hash of an operation's encoding (`op_id`): for path C the full encoding, signature included; for path B
+the encoding with the first half of the signature, the form a block holds, so the ID is the same before and after
+inclusion. You track an operation by it. See [Operations and fees](/docs/submitting-ops/).
 
 ### Operation
 
