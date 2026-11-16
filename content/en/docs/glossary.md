@@ -542,7 +542,8 @@ output key, which is why your account and your Taproot address are the same byte
 ### Packing floor
 
 The smallest path B fee (`--min-token-fee`, 1 base unit by default) and fee rate (`--min-fee-per-kib`, 0 by default)
-that a producer puts in its own blocks. See [Operations and fees](/docs/submitting-ops/).
+that a producer puts in its own blocks. A producer given a KSA price (`--ksa-price-sat`) also asks each op to pay for its
+bytes at the Bitcoin fee rate it pays. See [Operations and fees](/docs/submitting-ops/).
 
 ### Parallel block
 

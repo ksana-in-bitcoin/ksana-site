@@ -326,7 +326,7 @@ ksana-cli estimate-fee
 }
 ```
 
-`path_b.amount` is the node’s suggested `--fee-token` for a plain KSA transfer, in base units, and `path_b.per_kib` the suggested fee per KiB of an operation’s cost, for larger operations. `feerate_sat_vb` is the Bitcoin fee rate the node pays for its own settlements now, a reference for `--btc-fee-rate`. All three are suggestions; [Operations and fees](/docs/submitting-ops/) explains how fees work.
+`path_b.amount` is the node’s suggested `--fee-token` for a plain KSA transfer, in base units, and `path_b.per_kib` the suggested fee per KiB of an operation’s cost, for larger operations. A node run with `--ksa-price-sat` adds `path_b.per_kib_data`, the fee it asks per KiB of an operation’s encoded size. `feerate_sat_vb` is the Bitcoin fee rate the node pays for its own settlements now, a reference for `--btc-fee-rate`. All of them are suggestions; [Operations and fees](/docs/submitting-ops/) explains how fees work.
 
 ## Send a transfer
 

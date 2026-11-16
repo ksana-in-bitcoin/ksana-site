@@ -326,7 +326,7 @@ ksana-cli estimate-fee
 }
 ```
 
-`path_b.amount` 是节点为一笔普通 KSA 转账建议的 `--fee-token`，以最小单位计；`path_b.per_kib` 是按操作成本计、每 KiB 建议的手续费，适用于较大的操作。`feerate_sat_vb` 是节点眼下为自己的结算支付的比特币费率，可作为 `--btc-fee-rate` 的参考。这三个都只是建议；[操作与手续费](/docs/submitting-ops/)讲解了手续费如何运作。
+`path_b.amount` 是节点为一笔普通 KSA 转账建议的 `--fee-token`，以最小单位计；`path_b.per_kib` 是按操作成本计、每 KiB 建议的手续费，适用于较大的操作。设了 `--ksa-price-sat` 的节点还会给出 `path_b.per_kib_data`，即它对操作编码后的大小每 KiB 要的手续费。`feerate_sat_vb` 是节点眼下为自己的结算支付的比特币费率，可作为 `--btc-fee-rate` 的参考。这些都只是建议；[操作与手续费](/docs/submitting-ops/)讲解了手续费如何运作。
 
 ## 发送转账
 

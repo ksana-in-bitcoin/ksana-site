@@ -110,9 +110,8 @@ import {
   VMOP_VERSION,
   accountOf,
   encodeVmOp,
-  feeFor,
   ksaAssetId,
-  opCost,
+  pathBFee,
   signedVmop,
 } from '@ksana/sdk';
 
@@ -136,9 +135,9 @@ export async function transfer(
     max_gas: maxGas,
     action: { kind: 'AssetTransfer', asset: ksaAssetId(), to, amount },
   };
-  // The suggested rate is per KiB of the op's cost: measure the signed op, then sign the real fee.
-  const cost = opCost(params, encodeVmOp(signedVmop(unsigned, secretKey)).length, maxGas);
-  const fee = feeFor(estimate.path_b.per_kib, cost, estimate.path_b.amount);
+  // The node's rates are per KiB of the op's cost and of its size: measure the signed op, then sign the real fee.
+  const size = encodeVmOp(signedVmop(unsigned, secretKey)).length;
+  const fee = pathBFee(params, estimate.path_b, size, maxGas);
   const op = signedVmop({ ...unsigned, fee: { kind: 'Token', amount: fee } }, secretKey);
   const { op_id } = await rpc.submitOp(op); // RpcError -32010 or -32011 when the node refuses it
   return op_id;
@@ -146,7 +145,7 @@ export async function transfer(
 ```
 
 - **Nonce.** `getAccount` returns the account’s next nonce. A node queues up to 64 ops per account, so for a burst of ops you can count up from there.
-- **Fee.** A flat amount of KSA in base units, charged even when the op fails. `estimateFee` suggests `path_b.amount` for a plain transfer and `path_b.per_kib` per KiB of an op’s cost: its encoded size or its gas limit converted to bytes, whichever is larger. The suggestion moves with recent blocks, and a signet node accepts 1 base unit.
+- **Fee.** A flat amount of KSA in base units, charged even when the op fails. `estimateFee` suggests `path_b.amount` for a plain transfer and `path_b.per_kib` per KiB of an op’s cost: its encoded size or its gas limit converted to bytes, whichever is larger. A node whose operator set a KSA price also returns `path_b.per_kib_data`, per KiB of the op’s encoded size alone. `pathBFee` gives the fee of an op from all three. The suggestion moves with recent blocks, and a signet node accepts 1 base unit.
 - **Gas.** A KSA transfer uses exactly 10,000 gas. A call costs 20,000 plus 1 per byte of the contract’s code plus 10,000 per attached asset plus what the method uses: see [Host functions and gas](/docs/host-functions/).
 - **Refusals.** `submitOp` throws `RpcError` -32010 for an invalid op, such as a used nonce or a balance that cannot cover the fees. It throws -32011 when the node’s policy refuses the op, such as a fee below the node’s floor.
 
@@ -165,10 +164,9 @@ import {
   XverseAdapter,
   btcNetworkOf,
   encodeVmOp,
-  feeFor,
   fromHex,
   ksaAssetId,
-  opCost,
+  pathBFee,
   signVmopWithWallet,
 } from '@ksana/sdk';
 
@@ -210,8 +208,8 @@ export async function send(
   };
   // A wallet's signature encodes in at most 67 bytes: size the op without asking the wallet twice.
   const placeholder = { kind: 'Bip322Simple' as const, bytes: new Uint8Array(67) };
-  const cost = opCost(params, encodeVmOp({ ...unsigned, sig: placeholder }).length, maxGas);
-  const fee = feeFor(estimate.path_b.per_kib, cost, estimate.path_b.amount);
+  const size = encodeVmOp({ ...unsigned, sig: placeholder }).length;
+  const fee = pathBFee(params, estimate.path_b, size, maxGas);
   const final: UnsignedVmOp = { ...unsigned, fee: { kind: 'Token', amount: fee } };
   // The wallet shows a message to sign: the op's sighash in hex.
   const op = await signVmopWithWallet(final, wallet);
