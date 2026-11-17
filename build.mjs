@@ -107,14 +107,16 @@ async function buildAssets(lib, problems) {
 
   assets.js = await put('site', await readFile(path.join(ROOT, 'src/js/site.js')), 'js');
   assets.landingJs = await put('landing', await readFile(path.join(ROOT, 'src/js/landing.js')), 'js');
+  assets.peaksJs = await put('peaks', await readFile(path.join(ROOT, 'src/js/peaks.js')), 'js');
   assets.favicon = await put('favicon', lib.faviconSvg(), 'svg');
   for (const [key, name] of [
     ['ogImage', 'og.png'],
     ['touchIcon', 'apple-touch-icon.png'],
+    ['peaks', 'peaks.png'],
   ]) {
     const file = path.join(ROOT, 'src/img', name);
     if (!existsSync(file)) {
-      problems.push(`src/img/${name} is missing (scripts/make-images.mjs draws it)`);
+      problems.push(`src/img/${name} is missing (scripts/${key === 'peaks' ? 'make-peaks.mjs' : 'make-images.mjs'} draws it)`);
       continue;
     }
     const data = await readFile(file);
