@@ -501,7 +501,7 @@ ksana-cli --chain signet transfer --key alice.key --to @bob.key --amount 1000000
   --native --btc-wallet <wallet>
 ```
 
-命令会打印 `account`、`nonce`、`op_id` 和 `btc_txid`，后者是按区块浏览器写法的比特币交易 ID。`--btc-wallet` 指定付款的 bitcoind 钱包（省略时用 bitcoind 唯一加载的那个钱包），`--btc-fee-rate` 设定费率，单位为 sat/vB（默认 2）。
+命令会打印 `account`、`nonce`、`op_id` 和 `btc_txid`，后者是按区块浏览器写法的比特币交易 ID。`--btc-wallet` 指定付款的 bitcoind 钱包（省略时用 bitcoind 唯一加载的那个钱包），`--btc-fee-rate` 设定费率，单位为 sat/vB（默认 2）。费率高于 `--max-btc-fee-rate`（默认 1000）时，命令在注资和签名之前就会拒绝，免得输错的费率付出一大笔手续费。
 
 在 signet 上，交易有了 2 个比特币确认（`NATIVE_CONFIRMATIONS` 1 加 `ANCHOR_DEPTH` 1）之后，区块才会收录这个操作；在主网上将需要 5 个。在此之前，`ksana-cli op <op_id>` 会回答 `unknown op`。不要加 `--wait`，或者配上 `--timeout 3600`：默认的 120 秒早在那之前就用完了。
 
@@ -560,10 +560,11 @@ ksana-cli --chain signet top-up --exchange <exchange ID> --lock <lock number> \
 
 - 锁定的受益账户不是 `--beneficiary`，因为那样 KSA 会落到别人手里；
 - 锁定不处于开放状态；
+- 你传了 `--exchange-code-hash`，而节点给出的兑换合约代码哈希与它不同（即合约代码的 SHA-256，`ksana-cli contract` 会打印）。合约 ID 是别人给你的时候，请传入你审查过的那份代码的哈希。这项检查问的是节点，所以它防的是填错的合约，防不了说谎的节点；
 - 离到期只剩 3 个或更少的比特币区块（`--expiry-margin`，默认 3）；
 - `--sats` 与买下仍锁定的全部 KSA 所需的金额不同。`--allow-partial` 允许你只买一部分，其余继续为你锁定；`--allow-overpay` 允许你多付，但多付的部分买不到更多。
 
-它和[路径 C](#path-c-with-bitcoind) 一样需要 bitcoind，并打印领取操作的 `op_id`、`btc_txid`、比特币手续费、你得到的 `ksa` 以及锁定的条款。区块收录领取操作时，KSA 就到了受益账户；在 signet 上，这是 2 个比特币确认之后。在浏览器里，[signet 钱包](/docs/wallet/)也能做同样的事。
+它和[路径 C](#path-c-with-bitcoind) 一样需要 bitcoind，并打印领取操作的 `op_id`、`btc_txid`、比特币手续费、你得到的 `ksa`、锁定的条款，以及 `pay_by`，即付款最晚必须确认的比特币高度：过了这个高度，卖方的释放就可能抢先执行。区块收录领取操作时，KSA 就到了受益账户；在 signet 上，这是 2 个比特币确认之后。在浏览器里，[signet 钱包](/docs/wallet/)也能做同样的事。
 
 ## 等待与超时
 

@@ -628,6 +628,7 @@ export async function topUp(
 }
 ```
 
+- `checkExchangeCode(rpc, exchange, codeHash)` throws when the node gives another code hash for the exchange contract than the one you reviewed. Call it first when the contract ID came from someone else. It asks the node, so it guards against a wrong contract and not against a node that lies.
 - `getLock` reads the lock. `quoteTopUp(lock, sats)` gives the KSA that `sats` buy, and `satsForAll`, the sats that buy all of it.
 - `buildTopUp` refuses a lock whose beneficiary is not the buyer, a lock that is not open, and a lock that expires within 3 Bitcoin blocks (`expiryMargin`). It also refuses an amount other than `satsForAll`, unless you pass `allowPartial` or `allowOverpay`.
 - A fresh one-time key signs the claim op with nonce 0, so it uses none of your account’s nonces.

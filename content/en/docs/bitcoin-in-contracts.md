@@ -50,7 +50,7 @@ To show a contract that a Bitcoin transaction paid a script, the caller passes:
 - its position in the block and its Merkle branch, from the leaf up;
 - the block’s coinbase transaction, also without witness data, and the coinbase’s Merkle branch.
 
-Bitcoin’s Merkle tree allows two known forgeries, and `btc::verify_tx_inclusion` blocks both. It rejects a transaction of exactly 64 bytes, so an inner node of the tree cannot pass as a transaction. The coinbase proof pins the depth of the tree: the coinbase is always the first transaction, and the transaction’s branch must be as long as the coinbase’s. A forged transaction therefore cannot hang below a real 64-byte one.
+Bitcoin’s Merkle tree allows three known forgeries, and `btc::verify_tx_inclusion` blocks all of them. It rejects a transaction of exactly 64 bytes, so an inner node of the tree cannot pass as a transaction. The coinbase proof pins the depth of the tree: the coinbase is always the first transaction, and the transaction’s branch must be as long as the coinbase’s. A forged transaction therefore cannot hang below a real 64-byte one. Bitcoin also pairs the last node of an odd level with a copy of itself, so the last of 3 transactions would verify at index 2 and at index 3; the function rejects a position below such a copy, and a transaction verifies at its own index only.
 
 ```rust
 /// A transaction and the Merkle proofs that place it in a BTC block.

@@ -627,6 +627,7 @@ export async function topUp(
 }
 ```
 
+- `checkExchangeCode(rpc, exchange, codeHash)`：节点给出的兑换合约代码哈希与你审查过的不同时，它会抛出错误。合约 ID 是别人给你的时候，先调用它。它问的是节点，所以防的是填错的合约，防不了说谎的节点。
 - `getLock` 读取锁定。`quoteTopUp(lock, sats)` 给出 `sats` 聪能买到的 KSA，以及 `satsForAll`，即买下全部所需的聪数。
 - `buildTopUp` 会拒绝受益账户不是买方的锁定、不处于开放状态的锁定，以及 3 个比特币区块之内就会到期的锁定（`expiryMargin`）。金额不等于 `satsForAll` 时它也会拒绝，除非你传入 `allowPartial` 或 `allowOverpay`。
 - 领取操作由一把新生成的一次性密钥以 nonce 0 签名，所以不占用你账户的任何 nonce。
