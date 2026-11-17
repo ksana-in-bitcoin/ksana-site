@@ -319,10 +319,11 @@
   }
 }
 
-/* The dial */
+/* The dial: a small ring over the summit, not the size of its column, which the live readings below it keep */
 .dial {
   display: block;
-  width: 100%;
+  width: 54%;
+  margin: 0 auto 36%;
   height: auto;
   aspect-ratio: 1;
   overflow: visible;
