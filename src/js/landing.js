@@ -1,80 +1,9 @@
-// The landing page (D-125): the dial's ticks, the six acts that the scroll plays, the operation the story follows, the
+// The landing page (D-125): the six acts that the scroll plays, the operation the story follows, the
 // top bar taking the color of the field under it, and the signet's live readings. Without it, or with reduced motion,
 // the page shows the same drawings in their final state, one section after another.
 
-const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // the same query as the pinned layout of 07-landing.css: where it does not hold, the acts are ordinary sections
 const playing = matchMedia('(prefers-reduced-motion: no-preference) and (scripting: enabled)');
-
-// The dial ---------------------------------------------------------------------------------------------------------------
-// 120 ticks are one Bitcoin block of ten minutes at one fast-lane block per five seconds. The ticks start where this
-// ten-minute round of the clock stands and then fall at the pace of blocks: on average every five seconds, at random
-// like proof of work. A full round turns the ticks to ink, the seal stamps, and the round starts over.
-
-const dial = document.querySelector('.dial');
-if (dial) {
-  const ticks = [...dial.querySelectorAll('.tick')];
-  const hand = dial.querySelector('.dial-hand');
-  const seal = dial.querySelector('.dial-seal');
-  const n = ticks.length;
-  let pos = Math.floor(((Date.now() / 1000) % 600) / 5) % n;
-  let steps = pos;
-  const turn = () => {
-    hand.style.transform = `rotate(${steps * 3}deg)`;
-  };
-
-  if (reduceMotion) {
-    for (let i = 0; i < pos; i++) ticks[i].classList.add('is-on');
-    turn();
-  } else {
-    // light the ticks up to where the round stands, after the stroke has drawn itself
-    hand.style.transition = 'none';
-    turn();
-    hand.getBoundingClientRect();
-    hand.style.transition = '';
-    let i = 0;
-    const sweep = () => {
-      if (i >= pos) {
-        schedule();
-        return;
-      }
-      ticks[i].classList.add('is-on');
-      i++;
-      setTimeout(sweep, 14);
-    };
-    setTimeout(sweep, 2300);
-  }
-
-  function block() {
-    if (pos >= n) {
-      for (const tick of ticks) tick.classList.add('is-sealed');
-      seal.classList.remove('is-stamped');
-      seal.getBoundingClientRect();
-      seal.classList.add('is-stamped');
-      setTimeout(() => {
-        for (const tick of ticks) tick.classList.remove('is-on', 'is-sealed');
-        pos = 0;
-      }, 1200);
-      return 2200;
-    }
-    const tick = ticks[pos];
-    tick.classList.add('is-on', 'is-new');
-    setTimeout(() => tick.classList.remove('is-new'), 450);
-    pos++;
-    steps++;
-    turn();
-    return 0;
-  }
-
-  function schedule() {
-    // exponential waiting time with a mean of 5 s, kept between 0.4 s and 20 s
-    const wait = Math.min(20000, Math.max(400, -Math.log(1 - Math.random()) * 5000));
-    setTimeout(() => {
-      const extra = document.hidden ? 0 : block();
-      setTimeout(schedule, extra);
-    }, wait);
-  }
-}
 
 // The acts ---------------------------------------------------------------------------------------------------------------
 // An act's progress runs from 0, when its stage pins, to 1, when the stage lets go. Every moving part of a drawing says

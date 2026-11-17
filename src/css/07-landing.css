@@ -106,6 +106,56 @@
   }
 }
 
+/* The snow peaks behind the first screen, set in type (src/js/peaks.js): shade is ink by day and light is glow by night. */
+.hero-peaks {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--ink);
+  --peaks-tint: var(--qing);
+  --peaks-crest: var(--zhu);
+  --peaks-mode: ink;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease);
+}
+
+/* beside the words the mountains stand back behind them */
+@media (min-width: 960px) {
+  .hero-peaks {
+    -webkit-mask-image: linear-gradient(to right, rgb(0 0 0 / 0.05) 0%, rgb(0 0 0 / 0.09) 44%, rgb(0 0 0 / 0.5) 55%, #000 66%);
+    mask-image: linear-gradient(to right, rgb(0 0 0 / 0.05) 0%, rgb(0 0 0 / 0.09) 44%, rgb(0 0 0 / 0.5) 55%, #000 66%);
+  }
+}
+
+.hero-peaks.is-drawn {
+  opacity: 1;
+}
+
+.hero > .wrap {
+  position: relative;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hero-peaks {
+    --peaks-mode: glow;
+  }
+}
+
+:root[data-theme="dark"] .hero-peaks {
+  --peaks-mode: glow;
+}
+
+@media (forced-colors: active), print {
+  .hero-peaks {
+    display: none;
+  }
+}
+
 .hero-grid {
   display: grid;
   gap: clamp(28px, 4vw, 48px);
@@ -228,7 +278,12 @@
 
 .hero-art {
   justify-self: center;
-  width: min(100%, 380px);
+  width: min(100%, 460px);
+}
+
+/* the room the mountain stands in: the summit near its top, its feet in the mist above the live readings */
+.hero-mount {
+  aspect-ratio: 1 / 0.9;
 }
 
 /* the words of the prologue rise in turn while the ensō draws itself */
@@ -262,15 +317,18 @@
   .hero-grid {
     grid-template-columns: minmax(0, 1.16fr) minmax(0, 0.84fr);
   }
-  /* the dial gives way on a short screen, so that the chapters below it stay on the first screen */
   .hero-art {
     width: 100%;
+    max-width: 540px;
+  }
+  /* the mountain gives way on a short screen, so that the chapters below it stay on the first screen */
+  .hero-mount {
     max-width: clamp(300px, calc(100svh - 400px), 540px);
-    margin-right: -12px;
+    margin-inline: auto;
   }
 }
 
-/* The dial */
+/* The dial: no longer on the page, still the drawing of the share image (scripts/make-images.mjs) */
 .dial {
   display: block;
   width: 100%;
@@ -369,7 +427,7 @@
   gap: clamp(26px, 3vw, 36px);
 }
 
-/* Live readings from the signet's seed node, under the dial; hidden unless they arrive. */
+/* Live readings from the signet's seed node, under the mountain; hidden unless they arrive. */
 .live {
   display: grid;
   gap: 12px;
