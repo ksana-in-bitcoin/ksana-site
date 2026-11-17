@@ -8,8 +8,9 @@
 // the middle of the element data-at names, moved by data-summit times that element's width, and the whole picture is
 // data-span times as wide as it. data-ebb="0.42 0.64" lets the mountains dissolve between those two distances below the
 // element's middle, again in its widths. Without data-at the numbers are fractions of the canvas itself.
-// The canvas's own style gives the rest: font-size the size of a glyph, color the ink, --peaks-tint the second color
-// and --peaks-mode whether shade is ink (daylight) or light is glow (night).
+// The canvas's own style gives the rest: font-size the size of a glyph, color the ink, --peaks-tint the second color,
+// --peaks-mode whether shade is ink (daylight) or light is glow (night), and --peaks-crest, where it is set, the color
+// of the first sun on the lit snow of the summit.
 
 const RAMP = ' .·:;-=+*x#%@';
 const FPS = 10;
@@ -77,8 +78,9 @@ export async function peaks(canvas) {
   const span = Number(canvas.dataset.span || 1.4);
   const [e0, e1] = (canvas.dataset.ebb || '').split(' ').map(Number);
 
-  // the grid: for each cell how much of the ground shows, the shade or the light it carries, the character of a
-  // skyline or 0, how high it stands in the picture and a number of its own for the order it appears in
+  // the grid: for each cell how much of the ground shows, the shade or the light it carries, how much of the first sun
+  // it catches, the character of a skyline or 0, how high it stands in the picture and a number of its own for the
+  // order it appears in
   let cols = 0;
   let rows = 0;
   let cw = 0;
@@ -86,11 +88,12 @@ export async function peaks(canvas) {
   let size = 0;
   let cover = new Float32Array(0);
   let value = new Float32Array(0);
+  let crest = new Float32Array(0);
   let line = new Uint8Array(0);
   let high = new Float32Array(0);
   let rank = new Float32Array(0);
   let glow = false;
-  let inks = ['#000', '#000'];
+  let inks = ['#000', '#000', ''];
   let flakes = [];
   let born = 0;
 
@@ -133,7 +136,7 @@ export async function peaks(canvas) {
     cols = Math.ceil(w / cw);
     rows = Math.ceil(h / ch);
     glow = style.getPropertyValue('--peaks-mode').trim() === 'glow';
-    inks = [style.color, style.getPropertyValue('--peaks-tint').trim() || style.color];
+    inks = [style.color, style.getPropertyValue('--peaks-tint').trim() || style.color, style.getPropertyValue('--peaks-crest').trim()];
 
     // where the summit stands and how many pixels of the screen one pixel of the picture takes
     let px = dx * w;
@@ -153,6 +156,7 @@ export async function peaks(canvas) {
     const n = cols * rows;
     cover = new Float32Array(n);
     value = new Float32Array(n);
+    crest = new Float32Array(n);
     line = new Uint8Array(n);
     high = new Float32Array(n);
     rank = new Float32Array(n);
@@ -174,6 +178,9 @@ export async function peaks(canvas) {
         far[i] = s[1];
         cover[i] = ebbTo > ebbFrom ? shown * (1 - smooth(ebbFrom, ebbTo, (r + 0.5) * ch)) : shown;
         value[i] = glow ? 0.06 + 0.94 * bright : 1 - 0.92 * bright;
+        // the sun reaches the summit first: the lit snow of the picture's upper part below it
+        const below = ((r + 0.5) * ch - py) / scale / (pic.height - pic.sy);
+        crest[i] = inks[2] ? smooth(0.42, 0.78, bright) * (1 - smooth(0.05, 0.3, below)) : 0;
         high[i] = clamp((pic.sy + ((r + 0.5) * ch - py) / scale) / pic.height);
         rank[i] = hash(c, r);
       }
@@ -205,9 +212,9 @@ export async function peaks(canvas) {
     return true;
   }
 
-  // Six runs of text per row: two inks at three strengths.
+  // Nine runs of text per row: three inks at three strengths.
   const LEVELS = [0.4, 0.68, 1];
-  const buckets = Array.from({ length: 6 }, () => []);
+  const buckets = Array.from({ length: 9 }, () => []);
 
   function draw(now) {
     const t = now / 1000;
@@ -235,23 +242,26 @@ export async function peaks(canvas) {
           } else {
             // a cell in a hundred changes its character each frame, so that the picture breathes
             const grain = hash(i, Math.floor(t * FPS)) < 0.012 ? hash(i, Math.floor(t * FPS) + 7) : rank[i];
-            const j = Math.round(Math.pow(v, glow ? 0.8 : 0.72) * (RAMP.length - 1) + (grain - 0.5) * 1.1);
+            const sunlit = crest[i] > 0.2 + 0.7 * rank[i];
+            // by day the sunlit snow is drawn as light, the denser the brighter, where the rest is drawn as shade
+            const w = sunlit && !glow ? a * (0.3 + 0.7 * crest[i]) : v;
+            const j = Math.round(Math.pow(w, glow ? 0.8 : 0.72) * (RAMP.length - 1) + (grain - 0.5) * 1.1);
             if (j > 0) {
               glyph = RAMP[Math.min(RAMP.length - 1, j)];
               const level = a > 0.66 ? 2 : a > 0.33 ? 1 : 0;
-              k = glow ? (value[i] > 0.5 ? level : 3 + level) : v > 0.36 ? level : 3 + level;
+              k = sunlit ? 6 + level : glow ? (value[i] > 0.5 ? level : 3 + level) : v > 0.36 ? level : 3 + level;
             }
           }
         }
-        for (let b = 0; b < 6; b++) buckets[b].push(b === k ? glyph : ' ');
+        for (let b = 0; b < 9; b++) buckets[b].push(b === k ? glyph : ' ');
         if (k >= 0) any = true;
       }
       if (!any) continue;
       const y = (r + 0.5) * ch;
-      for (let b = 0; b < 6; b++) {
+      for (let b = 0; b < 9; b++) {
         const text = buckets[b].join('').trimEnd();
         if (!text) continue;
-        ctx.fillStyle = inks[b < 3 ? 0 : 1];
+        ctx.fillStyle = inks[Math.floor(b / 3)];
         ctx.globalAlpha = LEVELS[b % 3];
         ctx.fillText(text, 0, y);
       }
