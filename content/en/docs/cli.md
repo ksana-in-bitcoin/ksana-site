@@ -501,7 +501,7 @@ ksana-cli --chain signet transfer --key alice.key --to @bob.key --amount 1000000
   --native --btc-wallet <wallet>
 ```
 
-The command prints `account`, `nonce`, `op_id` and `btc_txid`, the Bitcoin transaction ID as explorers write it. `--btc-wallet` names the bitcoind wallet that pays (bitcoind’s only loaded wallet when you leave it out), and `--btc-fee-rate` sets the fee rate in sat/vB (default 2).
+The command prints `account`, `nonce`, `op_id` and `btc_txid`, the Bitcoin transaction ID as explorers write it. `--btc-wallet` names the bitcoind wallet that pays (bitcoind’s only loaded wallet when you leave it out), and `--btc-fee-rate` sets the fee rate in sat/vB (default 2). The command refuses a rate above `--max-btc-fee-rate` (default 1000) before it funds or signs anything, so a mistyped rate does not pay a large fee.
 
 On the signet a block includes the operation once its transaction has 2 Bitcoin confirmations (`NATIVE_CONFIRMATIONS` 1 plus `ANCHOR_DEPTH` 1); on mainnet it will take 5. Until then `ksana-cli op <op_id>` answers `unknown op`. Leave out `--wait`, or give it `--timeout 3600`: the default 120 seconds runs out long before.
 
@@ -560,10 +560,11 @@ Before paying, the command reads the lock and refuses to pay when:
 
 - its beneficiary is not `--beneficiary`, since the KSA would go to someone else;
 - it is not open;
+- you pass `--exchange-code-hash` and the node gives another code hash for the exchange contract (the SHA-256 of its code, as `ksana-cli contract` prints it). Pass the hash of the code you reviewed when the contract ID came from someone else. The check asks the node, so it guards against a wrong contract and not against a node that lies;
 - 3 or fewer Bitcoin blocks are left before its expiry (`--expiry-margin`, default 3);
 - `--sats` differs from what buys all the KSA still locked. `--allow-partial` lets you buy part of it and leave the rest locked for you; `--allow-overpay` lets you pay more, which buys nothing more.
 
-It needs bitcoind as [path C](#path-c-with-bitcoind) does, and prints the `op_id` of the claim, the `btc_txid`, the Bitcoin fee, the `ksa` you get and the lock’s terms. The KSA reaches the beneficiary when a block includes the claim, 2 Bitcoin confirmations later on the signet. The [signet wallet](/docs/wallet/) does the same from a browser.
+It needs bitcoind as [path C](#path-c-with-bitcoind) does, and prints the `op_id` of the claim, the `btc_txid`, the Bitcoin fee, the `ksa` you get, the lock’s terms and `pay_by`, the Bitcoin height by which the payment must confirm: after it, the seller’s release may run first. The KSA reaches the beneficiary when a block includes the claim, 2 Bitcoin confirmations later on the signet. The [signet wallet](/docs/wallet/) does the same from a browser.
 
 ## Waiting and timeouts
 
