@@ -72,7 +72,7 @@ ksana-cli --chain signet key alice.key
 }
 ```
 
-`key` writes a new random secret key to the file (mode `0600`) when the file does not exist, and reads it when it does. It never contacts the node and never prints the secret. The file holds the secret key as 64 hex digits, the same format `ksana-keytool` and the node’s funding key use.
+`key` writes a new random secret key to the file (mode `0600`) when the file does not exist, and reads it when it does. It never contacts the node and never prints the secret. The file holds the secret key as 64 hex digits, the same format `ksana-keytool` and the node’s funding key use. When a key file can be read by its group or by every user of the machine, every command that reads it prints a warning on standard error and goes on; `chmod 600` the file to silence it.
 
 `account` is the Taproot output key, which is your account; `address` is the same 32 bytes as a Taproot address; `internal_key` is the key before the Taproot tweak, and `script` the address’s output script. Without `--chain` or `--network`, `key` prints a devnet address (`bcrt1p…`); `--network regtest|signet|testnet|mainnet` picks the address encoding directly. [Accounts](/docs/accounts/) explains how keys, accounts and addresses relate.
 

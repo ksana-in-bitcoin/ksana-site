@@ -72,7 +72,7 @@ ksana-cli --chain signet key alice.key
 }
 ```
 
-文件不存在时，`key` 生成一把新的随机私钥写进这个文件（权限 `0600`）；文件已存在时，就读取它。它从不联系节点，也从不打印私钥。文件里存的是 64 位十六进制的私钥，格式与 `ksana-keytool` 和节点的出资密钥相同。
+文件不存在时，`key` 生成一把新的随机私钥写进这个文件（权限 `0600`）；文件已存在时，就读取它。它从不联系节点，也从不打印私钥。文件里存的是 64 位十六进制的私钥，格式与 `ksana-keytool` 和节点的出资密钥相同。如果密钥文件能被同组用户或机器上的所有用户读取，凡是读取它的命令都会在标准错误输出上打印一条警告，然后照常执行；对文件执行 `chmod 600` 即可消除这条警告。
 
 `account` 是 Taproot 输出公钥，也就是你的账户；`address` 是同样这 32 字节写成的 Taproot 地址；`internal_key` 是做 Taproot 调整（tweak）之前的公钥，`script` 是这个地址的输出脚本。不加 `--chain` 或 `--network` 时，`key` 打印的是 devnet 地址（`bcrt1p…`）；`--network regtest|signet|testnet|mainnet` 直接指定地址的编码。[账户与地址](/docs/accounts/)讲解了密钥、账户和地址之间的关系。
 
