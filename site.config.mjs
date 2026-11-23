@@ -5,7 +5,7 @@ export default {
   // Canonical origin of this site: canonical links, the sitemap and Open Graph tags.
   origin: 'https://ksana.network',
   repo: 'https://github.com/ksana-in-bitcoin/ksana',
-  discord: 'https://discord.gg/t7ckfmNMU',
+  discord: 'https://discord.gg/yTvMJH9mut',
 
   // The hosted public signet (core/docs/SIGNET.md, D-107).
   signet: {
